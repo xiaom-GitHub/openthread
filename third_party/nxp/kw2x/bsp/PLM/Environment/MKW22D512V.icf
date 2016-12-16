@@ -1,0 +1,151 @@
+/**** Kinetis Linker Configuration File ****/
+
+/******************* Map of Kinetis FLASH ***********************************
+
+  +---------------+ - __region_ROM_end__, FSL_PROD_DATA_START_ADDRESS
+  | FSL Prod Data |
+  +---------------+ - FSL_PROD_DATA_END_ADDRESS, NV_STORAGE_START_ADDRESS
+  | NVM Region    |
+  +---------------+ - NV_STORAGE_END_ADDRESS, INT_STORAGE_START
+  |               |
+  | Int. Storage  |
+  |               |
+  +---------------+ - INT_STORAGE_END
+  |               |
+  | ROM region    |
+  |               |
+  +---------------+ - __region_ROM_start__
+  | Bootloader    |
+  +---------------+ - __region_BOOT_start__
+
+*****************************************************************************/
+
+/* By default, the Bootloader is not used. */
+if (!isdefinedsymbol(gUseBootloaderLink_d)) {
+  define symbol gUseBootloaderLink_d = 0;
+}
+
+/* By default, the internal storage is not used. */
+if (!isdefinedsymbol(gUseInternalStorageLink_d)) {
+  define symbol gUseInternalStorageLink_d = 0;
+}
+
+/* BOOTLOADER */
+if (gUseBootloaderLink_d) {
+  define exported symbol __region_BOOT_start__ = 0x00000000;
+  define exported symbol __region_BOOT_end__   = 0x00003FFF;
+  define exported symbol __region_ROM_start__  = __region_BOOT_end__ + 1;
+}
+else {
+  define exported symbol __region_ROM_start__  = 0x00000000;
+}
+
+/* ROM: size 512k */
+define exported symbol __region_ROM_end__      = 0x0007FFFF;
+
+/* RAM: size 32k */
+define exported symbol __region_RAM_start__ = 0x1FFF8000;
+define exported symbol __region_RAM_end__   = 0x1FFFFFFF;
+
+/* RAM2: size 32k */
+define exported symbol __region_RAM2_start__   = 0x20000000;
+define exported symbol __region_RAM2_end__     = 0x20007FFF;
+
+
+/* Start address of interrupt vector */
+define symbol __intvec_start__                 = __region_ROM_start__;
+define symbol __intvec_end__                   = __intvec_start__ + 0x03FF;
+define exported symbol __VECTOR_TABLE          = __intvec_start__;
+
+
+if (!gUseBootloaderLink_d) {
+  define symbol __FlashConfig_start__   = 0x00000400;
+  define symbol __FlashConfig_end__     = 0x0000040f;
+  define symbol __code_start__          = __FlashConfig_end__ + 1;
+}
+else {
+  define exported symbol __BootFlags_Start__   = __intvec_end__ + 1;
+  define exported symbol __BootFlags_End__     = __BootFlags_Start__ + 7;
+  define symbol __code_start__                 = __BootFlags_End__ + 1;
+}
+
+/* Initial Stack Pointer */
+define exported symbol __BOOT_STACK_ADDRESS = __region_RAM2_end__ - 7;
+
+/* Stack size */
+define exported symbol __size_cstack__ = 1024;
+
+/*--FSL Production Data--*/
+define symbol FSL_PROD_DATA_SECTOR_SIZE = 0x800; /* 2k flash sector size */
+define symbol FSL_PROD_DATA_START_ADDRESS = __region_ROM_end__;
+define symbol FSL_PROD_DATA_END_ADDRESS = FSL_PROD_DATA_START_ADDRESS - FSL_PROD_DATA_SECTOR_SIZE + 1;
+
+/*--NVM Configuration--*/
+define symbol NV_STORAGE_SECTOR_SIZE = 0x800; /* 2k flash sector size */
+define symbol NV_STORAGE_MAX_SECTORS = 7;     /* NV_STORAGE_MAX_SECTORS * NV_STORAGE_SECTOR_SIZE = total NV Storage space */
+define symbol NV_STORAGE_START_ADDRESS = FSL_PROD_DATA_END_ADDRESS - 1;
+define symbol NV_STORAGE_END_ADDRESS = NV_STORAGE_START_ADDRESS - (NV_STORAGE_MAX_SECTORS * NV_STORAGE_SECTOR_SIZE) + 1;
+
+/*--Internal Storage Configuration--*/
+if (gUseInternalStorageLink_d) {
+  define symbol   INT_STORAGE_SECTOR_SIZE  = 0x800; /* 2k flash sector size */
+  define exported symbol INT_STORAGE_START = NV_STORAGE_END_ADDRESS - 1;
+  define exported symbol INT_STORAGE_SIZE  = INT_STORAGE_SECTOR_SIZE * ( ((NV_STORAGE_END_ADDRESS - __region_ROM_start__)/2)/INT_STORAGE_SECTOR_SIZE +1);
+  define exported symbol INT_STORAGE_END   = INT_STORAGE_START - INT_STORAGE_SIZE + 1;
+  define symbol __code_end__ = INT_STORAGE_END - 1;
+}
+else {
+  define symbol __code_end__ = NV_STORAGE_END_ADDRESS - 1;
+}
+
+
+/*** Define memory Regions ***/
+define memory mem with size = 4G;
+
+if (gUseBootloaderLink_d) {
+  define region BOOT_region        = mem:[from __region_BOOT_start__ to  __region_BOOT_end__];
+  define region BOOT_Flags_region  = mem:[from __BootFlags_Start__   to  __BootFlags_End__];
+  define region ROM_region         = mem:[from __region_ROM_start__  to  __code_end__];
+}
+else {
+  define region ROM_region         = mem:[from __region_ROM_start__ to (__FlashConfig_start__ - 1)] | mem:[from (__FlashConfig_end__+1)  to __code_end__];
+  define region FlashConfig_region = mem:[from __FlashConfig_start__ to __FlashConfig_end__];
+}
+
+if (gUseInternalStorageLink_d) {
+  define region InternalStorage    = mem:[from INT_STORAGE_END to INT_STORAGE_START];
+}
+
+define region FSL_PROD_region    = mem:[from FSL_PROD_DATA_END_ADDRESS to FSL_PROD_DATA_START_ADDRESS];
+define region NVM_region         = mem:[from NV_STORAGE_END_ADDRESS to NV_STORAGE_START_ADDRESS];
+define region RAM_region         = mem:[from __region_RAM_start__   to __region_RAM_end__] | mem:[from __region_RAM2_start__ to (__region_RAM2_end__ - __size_cstack__)];
+define region STACK_region      = mem:[from (__region_RAM2_end__ - __size_cstack__ + 1) to __region_RAM2_end__];
+
+/*** Initialization ***/
+initialize by copy  { readwrite };
+do not initialize  { section .noinit };
+
+/*** Define Blocks ***/
+define block CSTACK    with alignment = 8, size = __size_cstack__   { };
+define block CodeRelocate    { section .textrw_init };
+define block CodeRelocateRam { section .textrw };
+define block FslProdData     { readonly section FREESCALE_PROD_DATA };
+
+/*** Placements ***/
+if (gUseBootloaderLink_d) {
+  place at address mem: __region_BOOT_start__ {section .bootloader};
+  place at address mem: __BootFlags_Start__   { readonly section BootloaderFlags };
+}
+else {
+  place in FlashConfig_region { section FlashConfig };
+}
+
+place at address mem:__intvec_start__ { readonly section .intvec };
+place at address mem:__code_start__   { readonly section .isr_handler, readonly section .noinit };
+
+place in ROM_region   { readonly, block CodeRelocate};
+
+place in RAM_region   { readwrite, block CodeRelocateRam};
+place in STACK_region { block CSTACK };
+
+place in FSL_PROD_region   { block FslProdData };

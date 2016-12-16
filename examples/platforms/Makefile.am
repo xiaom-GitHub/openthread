@@ -34,6 +34,7 @@ DIST_SUBDIRS                            = \
     cc2538                                \
     cc2650                                \
     da15000                               \
+    kw2x                                  \
     nrf52840                              \
     posix                                 \
     utils                                 \
@@ -57,6 +58,10 @@ if OPENTHREAD_EXAMPLES_DA15000
 SUBDIRS                                += da15000
 endif
 
+if OPENTHREAD_EXAMPLES_KW2X
+SUBDIRS                                += kw2x
+endif
+
 if OPENTHREAD_EXAMPLES_NRF52840
 SUBDIRS                                += nrf52840
 endif
@@ -71,6 +76,7 @@ PRETTY_SUBDIRS                          = \
     cc2538                                \
     cc2650                                \
     da15000                               \
+    kw2x                                  \
     nrf52840                              \
     posix                                 \
     utils                                 \
