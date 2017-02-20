@@ -39,14 +39,15 @@
 
 enum
 {
-    FLASH_PAGE_SIZE = 0x800,
+    FLASH_PAGE_SIZE  = 0x800,
+    FLASH_BLOCK_SIZE = 0x80000,
 };
 
-extern uint32_t __flash_data_start__;
-extern uint32_t __flash_data_end__;
+//extern uint32_t __flash_data_start__;
+//extern uint32_t __flash_data_end__;
 
-#define FLASH_START_ADDR     ((uint32_t)&__flash_data_start__)
-#define FLASH_END_ADDR       ((uint32_t)&__flash_data_end__)
+//#define FLASH_START_ADDR     ((uint32_t)&__flash_data_start__)
+//#define FLASH_END_ADDR       ((uint32_t)&__flash_data_end__)
 
 NvConfig_t mNvConfig =
 {
@@ -69,7 +70,7 @@ ThreadError utilsFlashInit(void)
 
 uint32_t utilsFlashGetSize(void)
 {
-    return FLASH_END_ADDR - FLASH_START_ADDR;
+    return FLASH_BLOCK_SIZE;//FLASH_END_ADDR - FLASH_START_ADDR;
 }
 
 ThreadError utilsFlashErasePage(uint32_t aAddress)

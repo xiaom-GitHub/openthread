@@ -60,9 +60,6 @@ _stack_size = 0x0;   /* required amount of stack */
 __stack_start__ = ORIGIN(ram) + LENGTH(ram);
 __stack_end__ = __stack_start__ - _stack_size;
 
-__flash_data_start__ = ORIGIN(flash);
-__flash_data_end__ = __flash_data_start__ + LENGTH(flash);
-
 EXTERN(__vector_table)
 
 SECTIONS

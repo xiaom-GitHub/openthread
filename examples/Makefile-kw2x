@@ -48,8 +48,8 @@ configure_OPTIONS               = \
     --with-platform-info=KW2X     \
     $(NULL)
 
-ifeq ($(CLI_LOGGING),1)
-configure_OPTIONS              += --enable-cli-logging
+ifeq ($(DEFAULT_LOGGING),1)
+configure_OPTIONS              += --enable-default-logging
 endif
 
 ifeq ($(CERT_LOG),1)

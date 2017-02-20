@@ -76,6 +76,7 @@ enum
     kmRstBAssertTime = 50,
 };
 
+#if 0
 static void PhyResetSequenceStatus(void)
 {
     uint8_t phyReg = MC1324xDrv_DirectAccessSPIRead(PHY_CTRL1);
@@ -87,6 +88,7 @@ static void PhyResetSequenceStatus(void)
     // wait for Sequence Idle
     while ((MC1324xDrv_DirectAccessSPIRead(SEQ_STATE) & 0x1F) != 0);
 }
+#endif
 
 static void PhyDoze(void)
 {
@@ -100,29 +102,29 @@ static void PhyDoze(void)
 ThreadError startReceiveSequence(uint8_t aChannel)
 {
     ThreadError error = kThreadError_None;
-    //uint8_t state = PhyGetSeqState();
 
     // start R sequence:
     // 1. beginning
     // 2. finished T sequence
     // 3. finished R sequence
-    if (!sIsReceiverEnabled || (sState == kStateReceive && sTransmitFrameDone))
+    if (!sIsReceiverEnabled)// || (sState == kStateReceive && sTransmitFrameDone))
     {
         //assert(state == gIdle_c || state == gRX_c);
         if (PhyGetSeqState() != gIdle_c)
         {
-            PhyResetSequenceStatus();
+            //PhyResetSequenceStatus();
+            PhyPlmeForceTrxOffRequest();
         }
 
         VerifyOrExit(PhyPlmeSetCurrentChannelRequestPAN0(aChannel) == gPhySuccess_c, error = kThreadError_Busy);
         VerifyOrExit(PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams) == gPhySuccess_c,
                      error = kThreadError_Busy);
 
-        if (!sIsReceiverEnabled)
-        {
-            sIsReceiverEnabled = true;
-            otLogInfoPlat("Enabling receiver", NULL);
-        }
+        //if (!sIsReceiverEnabled)
+        //{
+        sIsReceiverEnabled = true;
+        otLogInfoPlat("Enabling receiver", NULL);
+        //}
     }
 
 exit:
@@ -204,13 +206,9 @@ void kw2xRadioInit(void)
     sReceiveFrame.mLength = 0;
     sReceiveFrame.mPsdu = pReceiveFrame.data;
 
-    // init transceiver first for following PhyInit()
-    // that will use transceiver register
     kw2xTransceiverInit();
-
     PhyInit();
     PhyPlmeSetLQIModeRequest(1);  // LQI Based on RSSI
-    PhyResetSequenceStatus();
 
     otLogInfoPlat("Initialized", NULL);
 }
@@ -325,11 +323,9 @@ ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
 
     VerifyOrExit(sState == kStateReceive, error = kThreadError_Busy);
 
-    // abort R sequence and return idle state
     if (PhyGetSeqState() != gIdle_c && sIsReceiverEnabled)
     {
          PhyPlmeForceTrxOffRequest();
-        //PhyResetSequenceStatus();
     }
 
     //VerifyOrExit(aPacket->mLength <= IEEE802154_MAX_LENGTH - 2, error = kThreadError_InvalidArgs);
@@ -386,7 +382,8 @@ void kw2xRadioProcess(otInstance *aInstance)
         otPlatRadioReceiveDone(aInstance, &sReceiveFrame, error);
         sReceiveFrame.mLength = 0;
         //sIsReceiverEnabled = false;
-        startReceiveSequence(sChannel);
+        //startReceiveSequence(sChannel);
+        PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
         sReceiveFrameDone = false;
         MC1324xDrv_IRQ_Enable();
     }
@@ -398,7 +395,8 @@ void kw2xRadioProcess(otInstance *aInstance)
         otPlatRadioTransmitDone(aInstance, &sTransmitFrame, rxPending, error);
         sState = kStateReceive;
         //sTransmitFrame.mLength = 0; //eable this, will casue enter PHY_Interrupt()
-        startReceiveSequence(sChannel);
+        //startReceiveSequence(sChannel);
+        PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
         sTransmitFrameDone = false;
         MC1324xDrv_IRQ_Enable();
     }
@@ -412,8 +410,6 @@ RadioPacket *otPlatRadioGetTransmitBuffer(otInstance *aInstance)
     return &sTransmitFrame;
 }
 
-// PLL unlock or autosequence is completed
-// and sequencer enters idle state
 void PhyPlmeSyncLossIndication()
 {
     switch (sState)
@@ -423,14 +419,17 @@ void PhyPlmeSyncLossIndication()
         break;
 
     case kStateReceive:
-        sReceiveError = kThreadError_Abort;
+        //sReceiveError = kThreadError_Abort;
         PhyAbort();
+        PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
+        //startReceiveSequence(sChannel);
         //sReceiveFrameDone = true;
         break;
 
     case kStateTransmit:
         sTransmitError = kThreadError_Abort;
         PhyAbort();
+        PhyPdDataRequest(&pTransmitFrame, GetPhyTxMode(&sTransmitFrame), NULL); 
         //sTransmitFrameDone = true;
         break;
 
@@ -440,27 +439,23 @@ void PhyPlmeSyncLossIndication()
     }
 }
 
-// TMR3 timeout callback
 void PhyTimeRxTimeoutIndication()
 {
     assert(false);
 }
 
-// Timer interrupt
 void PhyTimeStartEventIndication()
 {
     assert(false);
 }
 
-// check current channel is idle or busy
-// for T sequence or cca or ccca sequence
 void PhyPlmeCcaConfirm(bool_t aChannelInUse)
 {
     switch (sState)
     {
     case kStateDisabled:
     case kStateSleep:
-        break;
+       break;
 
     case kStateTransmit:
         if (aChannelInUse)
@@ -478,7 +473,6 @@ void PhyPlmeCcaConfirm(bool_t aChannelInUse)
     }
 }
 
-// energy scan result
 void PhyPlmeEdConfirm(uint8_t energyLevel)
 {
     (void)energyLevel;
@@ -486,7 +480,6 @@ void PhyPlmeEdConfirm(uint8_t energyLevel)
     assert(false);
 }
 
-// transmit done callback
 void PhyPdDataConfirm(void)
 {
     assert(sState == kStateTransmit);
@@ -494,7 +487,6 @@ void PhyPdDataConfirm(void)
     sTransmitFrameDone = true;
 }
 
-// receive done callback
 void PhyPdDataIndication(void)
 {
     //uint8_t rssi;
@@ -521,7 +513,6 @@ void PhyPdDataIndication(void)
             sReceiveError = kThreadError_None;
             sReceiveFrameDone = true;
         }
-
         break;
 
     default:
@@ -529,7 +520,6 @@ void PhyPdDataIndication(void)
     }
 }
 
-// received packet is rejected due to some reason
 void PhyPlmeFilterFailRx(void)
 {
     switch (sState)
@@ -541,7 +531,8 @@ void PhyPlmeFilterFailRx(void)
 
     case kStateReceive:
         PhyAbort();
-        //PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
+        PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
+        //startReceiveSequence(sChannel);
         break;
 
     case kStateTransmit:
@@ -553,7 +544,6 @@ void PhyPlmeFilterFailRx(void)
     }
 }
 
-// reach RX_WATER_MARK count
 void PhyPlmeRxSfdDetect(uint8_t aFrameLength)
 {
     (void)aFrameLength;
