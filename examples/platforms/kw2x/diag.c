@@ -40,9 +40,6 @@
 #include <openthread-config.h>
 #include <openthread.h>
 
-//#include <platform/alarm.h>
-//#include "platform-cc2538.h"
-
 /**
  * diagnostics mode flag.
  *

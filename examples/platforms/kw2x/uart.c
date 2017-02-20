@@ -36,10 +36,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "usbcdc.h"
 #include "platform-kw2x.h"
+
 #include <common/code_utils.hpp>
 #include <platform/uart.h>
-#include "usbcdc.h"
 
 enum
 {

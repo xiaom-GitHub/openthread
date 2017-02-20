@@ -39,6 +39,7 @@
 #include <common/logging.hpp>
 
 #include "platform-kw2x.h"
+
 #include <Phy.h>
 #include <MC1324xDrv.h>
 #include <MC1324xReg.h>
@@ -64,31 +65,18 @@ extern void delayMs(uint16_t val);
 
 enum
 {
-    IEEE802154_MIN_LENGTH = 5,
-    IEEE802154_MAX_LENGTH = 127,
-    IEEE_EUI64 = 0x00280028, //TODO:use NXP EUI
+    IEEE802154_MIN_LENGTH  = 5,
+    IEEE802154_MAX_LENGTH  = 127,
     IEEE802154_ACK_REQUEST = 1 << 5,
+
+    IEEE_EUI64 = 0x00280028, //TODO:use NXP EUI
 };
 
 enum
 {
+    kmRstBAssertTime     = 50,
     kmClkSwitchDelayTime = 50,
-    kmRstBAssertTime = 50,
 };
-
-#if 0
-static void PhyResetSequenceStatus(void)
-{
-    uint8_t phyReg = MC1324xDrv_DirectAccessSPIRead(PHY_CTRL1);
-
-    // Abort current SEQ
-    phyReg &= (uint8_t) ~(cPHY_CTRL1_XCVSEQ);
-    MC1324xDrv_DirectAccessSPIWrite(PHY_CTRL1, phyReg);
-
-    // wait for Sequence Idle
-    while ((MC1324xDrv_DirectAccessSPIRead(SEQ_STATE) & 0x1F) != 0);
-}
-#endif
 
 static void PhyDoze(void)
 {
@@ -103,16 +91,10 @@ ThreadError startReceiveSequence(uint8_t aChannel)
 {
     ThreadError error = kThreadError_None;
 
-    // start R sequence:
-    // 1. beginning
-    // 2. finished T sequence
-    // 3. finished R sequence
-    if (!sIsReceiverEnabled)// || (sState == kStateReceive && sTransmitFrameDone))
+    if (!sIsReceiverEnabled)
     {
-        //assert(state == gIdle_c || state == gRX_c);
         if (PhyGetSeqState() != gIdle_c)
         {
-            //PhyResetSequenceStatus();
             PhyPlmeForceTrxOffRequest();
         }
 
@@ -120,11 +102,8 @@ ThreadError startReceiveSequence(uint8_t aChannel)
         VerifyOrExit(PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams) == gPhySuccess_c,
                      error = kThreadError_Busy);
 
-        //if (!sIsReceiverEnabled)
-        //{
         sIsReceiverEnabled = true;
         otLogInfoPlat("Enabling receiver", NULL);
-        //}
     }
 
 exit:
@@ -325,7 +304,7 @@ ThreadError otPlatRadioTransmit(otInstance *aInstance, RadioPacket *aPacket)
 
     if (PhyGetSeqState() != gIdle_c && sIsReceiverEnabled)
     {
-         PhyPlmeForceTrxOffRequest();
+        PhyPlmeForceTrxOffRequest();
     }
 
     //VerifyOrExit(aPacket->mLength <= IEEE802154_MAX_LENGTH - 2, error = kThreadError_InvalidArgs);
@@ -350,7 +329,6 @@ ThreadError otPlatRadioHandleTransmitDone(bool *aFramePending)
 {
     VerifyOrExit(sState != kStateDisabled, ;);
     assert(sState == kStateTransmit);
-    //sState = kStateReceive; //return listening state
     *aFramePending = PhyPpIsRxAckDataPending();
 
 exit:
@@ -361,7 +339,6 @@ ThreadError otPlatRadioHandleReceiveDone()
 {
     VerifyOrExit(sState != kStateDisabled, ;);
     assert(sState == kStateReceive || sState == kStateTransmit);
-    //sState = kStateSleep;
     sIsReceiverEnabled = false;
 
     otLogDebgPlat("Received %d bytes", sReceiveFrame.mLength);
@@ -381,8 +358,6 @@ void kw2xRadioProcess(otInstance *aInstance)
         error = otPlatRadioHandleReceiveDone();
         otPlatRadioReceiveDone(aInstance, &sReceiveFrame, error);
         sReceiveFrame.mLength = 0;
-        //sIsReceiverEnabled = false;
-        //startReceiveSequence(sChannel);
         PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
         sReceiveFrameDone = false;
         MC1324xDrv_IRQ_Enable();
@@ -394,14 +369,10 @@ void kw2xRadioProcess(otInstance *aInstance)
         error = otPlatRadioHandleTransmitDone(&rxPending);
         otPlatRadioTransmitDone(aInstance, &sTransmitFrame, rxPending, error);
         sState = kStateReceive;
-        //sTransmitFrame.mLength = 0; //eable this, will casue enter PHY_Interrupt()
-        //startReceiveSequence(sChannel);
         PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
         sTransmitFrameDone = false;
         MC1324xDrv_IRQ_Enable();
     }
-
-    //otPlatRadioReceive(aInstance, sChannel);
 }
 
 RadioPacket *otPlatRadioGetTransmitBuffer(otInstance *aInstance)
@@ -419,18 +390,14 @@ void PhyPlmeSyncLossIndication()
         break;
 
     case kStateReceive:
-        //sReceiveError = kThreadError_Abort;
         PhyAbort();
         PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
-        //startReceiveSequence(sChannel);
-        //sReceiveFrameDone = true;
         break;
 
     case kStateTransmit:
         sTransmitError = kThreadError_Abort;
         PhyAbort();
-        PhyPdDataRequest(&pTransmitFrame, GetPhyTxMode(&sTransmitFrame), NULL); 
-        //sTransmitFrameDone = true;
+        PhyPdDataRequest(&pTransmitFrame, GetPhyTxMode(&sTransmitFrame), NULL);
         break;
 
     default:
@@ -455,16 +422,14 @@ void PhyPlmeCcaConfirm(bool_t aChannelInUse)
     {
     case kStateDisabled:
     case kStateSleep:
-       break;
+        break;
 
     case kStateTransmit:
         if (aChannelInUse)
         {
             sTransmitError = kThreadError_ChannelAccessFailure;
             sTransmitFrameDone = true;
-            //PhyResetSequenceStatus();
         }
-
         break;
 
     default:
@@ -489,9 +454,6 @@ void PhyPdDataConfirm(void)
 
 void PhyPdDataIndication(void)
 {
-    //uint8_t rssi;
-    //uint8_t lqi;
-
     switch (sState)
     {
     case kStateDisabled:
@@ -499,15 +461,10 @@ void PhyPdDataIndication(void)
         break;
 
     case kStateReceive:
-
-        //lqi = pRxParams.linkQuality;
-        //rssi = ((rssi * 105) / 255) - 105;
-        //rssi = PhyPlmeGetRSSILevelRequest();
-
         if (pReceiveFrame.frameLength > 0)
         {
             sReceiveFrame.mPower = PhyPlmeGetRSSILevelRequest(); //rssi
-            sReceiveFrame.mLqi = (pRxParams.linkQuality/3) - 100; //LQI(dBm)
+            sReceiveFrame.mLqi = (pRxParams.linkQuality / 3) - 100; //LQI(dBm)
             sReceiveFrame.mLength = pReceiveFrame.frameLength;
 
             sReceiveError = kThreadError_None;
@@ -532,7 +489,6 @@ void PhyPlmeFilterFailRx(void)
     case kStateReceive:
         PhyAbort();
         PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
-        //startReceiveSequence(sChannel);
         break;
 
     case kStateTransmit:
@@ -569,7 +525,7 @@ void PhyPlmeRxSfdDetect(uint8_t aFrameLength)
 int8_t otPlatRadioGetRssi(otInstance *aInstance)
 {
     (void)aInstance;
-    return 0;
+    return PhyPlmeGetRSSILevelRequest();
 }
 
 otRadioCaps otPlatRadioGetCaps(otInstance *aInstance)
@@ -667,17 +623,3 @@ ThreadError otPlatRadioEnergyScan(otInstance *aInstance, uint8_t aScanChannel, u
     (void)aScanDuration;
     return kThreadError_NotImplemented;
 }
-
-# if 0
-void PhyUnexpectedTransceiverReset(void)
-{
-    sPhyEvents[sPhyEventsCur++] = 10;
-
-    if (sPhyEventsCur >= sizeof(sPhyEvents))
-    {
-        sPhyEventsCur = 0;
-    }
-
-    assert(false);
-}
-#endif

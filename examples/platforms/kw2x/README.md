@@ -77,7 +77,7 @@ stop
 whitelist
 ```
 
-
+NXP SDK CHANGELOG:
 1. add "#pragma GCC diagnostic ignored "-Wpedantic"" in MK21D5.h to avoid C99 does not support unnamed union or struct for c lanaguage.
 
 2. PortConfig.h 

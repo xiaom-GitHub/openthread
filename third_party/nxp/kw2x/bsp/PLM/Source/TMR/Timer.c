@@ -60,12 +60,12 @@ static tmrTimerTicks16_t mPreviousTimeInTicks;
 
 /*
  * NAME: mMaxToCountDown
- * DESCRIPTION:  Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that 
- * the currentTimeInTicks will never roll over mPreviousTimeInTicks in the 
+ * DESCRIPTION:  Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that
+ * the currentTimeInTicks will never roll over mPreviousTimeInTicks in the
  * TMR_Task(); A task have to be executed at most in 4ms.
  * VALUES: 0..65535
  */
-static uint16_t mMaxToCountDown; 
+static uint16_t mMaxToCountDown;
 
 /*
  * NAME: mTicksFor4ms
@@ -116,11 +116,11 @@ static uint8_t mNumberOfLowPowerActiveTimers = 0;
 
 #define IncrementActiveTimerNumber(type)  (((type) & gTmrLowPowerTimer_c) \
                                           ?(++mNumberOfLowPowerActiveTimers) \
-                                          :(++mNumberOfActiveTimers) )                                   
+                                          :(++mNumberOfActiveTimers) )
 #define DecrementActiveTimerNumber(type)  (((type) & gTmrLowPowerTimer_c) \
                                           ?(--mNumberOfLowPowerActiveTimers) \
-                                          :(--mNumberOfActiveTimers) ) 
-                                          
+                                          :(--mNumberOfActiveTimers) )
+
 /*
  * NAME: mTimerTaskID
  * DESCRIPTION: timer task ID. No other code should ever post an event to the timer task.
@@ -150,12 +150,12 @@ static tmrTimerTicks16_t mLpTmrPreviousTimeInTicks;
 
 /*
  * NAME: mLpTmrMaxToCountDown
- * DESCRIPTION:  Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that 
- * the currentTimeInTicks will never roll over mLpTmrPreviousTimeInTicks in the 
+ * DESCRIPTION:  Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that
+ * the currentTimeInTicks will never roll over mLpTmrPreviousTimeInTicks in the
  * TMR_Task(); A task have to be executed at most in 4ms.
  * VALUES: 0..65535
  */
-static uint16_t mLpTmrMaxToCountDown; 
+static uint16_t mLpTmrMaxToCountDown;
 
 /*
  * NAME: mLpTmrTicksFor4ms
@@ -183,14 +183,14 @@ static tmrStatus_t maLpTmrTimerStatusTable[gLpTmrTotalTimers_c];
 
 /*
  * NAME: mLpTmrNumberOfActiveTimers
- * DESCRIPTION: Number of active LPTMR-based software timers              
+ * DESCRIPTION: Number of active LPTMR-based software timers
  * VALUES: 0..255
  */
 static uint8_t mLpTmrNumberOfActiveTimers = 0;
 
 
 #define IncrementActiveLpTmrTimerNumber()    (++mLpTmrNumberOfActiveTimers)
-                                                                             
+
 #define DecrementActiveLpTmrTimerNumber()    (--mLpTmrNumberOfActiveTimers)
 
 /*
@@ -216,11 +216,11 @@ static bool_t mLpTmrHardwareIsRunning = FALSE;
  * RETURN: see definition of tmrStatus_t
  * NOTES: none
  *---------------------------------------------------------------------------*/
-static tmrStatus_t TMR_GetTimerStatus 
-( 
+static tmrStatus_t TMR_GetTimerStatus
+(
     tmrTimerID_t timerID
 #if gTMR_EnableHWLowPowerTimers_d
-    ,tmrHwSourceType_t hwTmrType
+    , tmrHwSourceType_t hwTmrType
 #endif
 );
 
@@ -228,17 +228,17 @@ static tmrStatus_t TMR_GetTimerStatus
  * NAME: TMR_SetTimerStatus
  * DESCRIPTION: Set the timer status
  * PARAMETERS:  IN: timerID - the timer ID
- * 			    IN: status - the status of the timer
- * 			    IN: hwTmrType - FTM or LPTMR
+ *              IN: status - the status of the timer
+ *              IN: hwTmrType - FTM or LPTMR
  * RETURN: None
  * NOTES: none
  *---------------------------------------------------------------------------*/
 static void TMR_SetTimerStatus
-( 
+(
     tmrTimerID_t timerID,
     tmrStatus_t status
 #if gTMR_EnableHWLowPowerTimers_d
-    ,tmrHwSourceType_t hwTmrType
+    , tmrHwSourceType_t hwTmrType
 #endif
 );
 
@@ -250,11 +250,11 @@ static void TMR_SetTimerStatus
  * RETURN: see definition of tmrTimerType_t
  * NOTES: none
  *---------------------------------------------------------------------------*/
-static tmrTimerType_t TMR_GetTimerType 
-( 
+static tmrTimerType_t TMR_GetTimerType
+(
     tmrTimerID_t timerID
 #if gTMR_EnableHWLowPowerTimers_d
-    ,tmrHwSourceType_t hwTmrType
+    , tmrHwSourceType_t hwTmrType
 #endif
 );
 
@@ -262,8 +262,8 @@ static tmrTimerType_t TMR_GetTimerType
  * NAME: TMR_SetTimerType
  * DESCRIPTION: Set the timer type
  * PARAMETERS:  IN: timerID - the timer ID
- * 			    IN: type - timer type
- * 			    IN: hwTmrType - FTM or LPTMR
+ *              IN: type - timer type
+ *              IN: hwTmrType - FTM or LPTMR
  * RETURN: none
  * NOTES: none
  *---------------------------------------------------------------------------*/
@@ -272,7 +272,7 @@ static void TMR_SetTimerType
     tmrTimerID_t timerID,
     tmrTimerType_t type
 #if gTMR_EnableHWLowPowerTimers_d
-    ,tmrHwSourceType_t hwTmrType
+    , tmrHwSourceType_t hwTmrType
 #endif
 );
 
@@ -291,10 +291,10 @@ static void TMR_SetTimerType
  *---------------------------------------------------------------------------*/
 static void TMR_StartLpTimer
 (
-    tmrTimerID_t timerID,                       
-    tmrTimerType_t timerType,                   
-    tmrTimeInMilliseconds_t timeInMilliseconds, 
-    void (*pfTimerCallBack)(tmrTimerID_t)       
+    tmrTimerID_t timerID,
+    tmrTimerType_t timerType,
+    tmrTimeInMilliseconds_t timeInMilliseconds,
+    void (*pfTimerCallBack)(tmrTimerID_t)
 );
 #endif
 
@@ -316,19 +316,19 @@ static tmrStatus_t TMR_GetTimerStatus
 (
     tmrTimerID_t timerID
 #if gTMR_EnableHWLowPowerTimers_d
-    ,tmrHwSourceType_t hwTmrType
-#endif    
+    , tmrHwSourceType_t hwTmrType
+#endif
 )
 {
 #if gTMR_EnableHWLowPowerTimers_d
-	
-	if(hwTmrType == tmrFTMbased_c)
-	{
-		return maTmrTimerStatusTable[timerID] & mTimerStatusMask_c;
-	}
-	
-	return maLpTmrTimerStatusTable[timerID] & mTimerStatusMask_c;
-	
+
+    if (hwTmrType == tmrFTMbased_c)
+    {
+        return maTmrTimerStatusTable[timerID] & mTimerStatusMask_c;
+    }
+
+    return maLpTmrTimerStatusTable[timerID] & mTimerStatusMask_c;
+
 #else
     return maTmrTimerStatusTable[timerID] & mTimerStatusMask_c;
 #endif
@@ -338,33 +338,33 @@ static tmrStatus_t TMR_GetTimerStatus
 * NAME: TMR_SetTimerStatus
 * DESCRIPTION: Set the timer status
 * PARAMETERS:  IN: timerID - the timer ID
-* 			   IN: status - the status of the timer	
-* 			   IN: hwTmrType - FTM or LPTMR
+*              IN: status - the status of the timer
+*              IN: hwTmrType - FTM or LPTMR
 * RETURN: None
 * NOTES: none
 *---------------------------------------------------------------------------*/
 static void TMR_SetTimerStatus
 (
-    tmrTimerID_t timerID, 
+    tmrTimerID_t timerID,
     tmrStatus_t status
 #if gTMR_EnableHWLowPowerTimers_d
-    ,tmrHwSourceType_t hwTmrType
-#endif    
+    , tmrHwSourceType_t hwTmrType
+#endif
 )
 {
 #if gTMR_EnableHWLowPowerTimers_d
-	
-	if(hwTmrType == tmrFTMbased_c)
-	{
-		maTmrTimerStatusTable[timerID] = (maTmrTimerStatusTable[timerID] & ~mTimerStatusMask_c) | status;
-	}
-	else
-	{
-		maLpTmrTimerStatusTable[timerID] = (maLpTmrTimerStatusTable[timerID] & ~mTimerStatusMask_c) | status;
-	}
-		
+
+    if (hwTmrType == tmrFTMbased_c)
+    {
+        maTmrTimerStatusTable[timerID] = (maTmrTimerStatusTable[timerID] & ~mTimerStatusMask_c) | status;
+    }
+    else
+    {
+        maLpTmrTimerStatusTable[timerID] = (maLpTmrTimerStatusTable[timerID] & ~mTimerStatusMask_c) | status;
+    }
+
 #else
-	maTmrTimerStatusTable[timerID] = (maTmrTimerStatusTable[timerID] & ~mTimerStatusMask_c) | status;
+    maTmrTimerStatusTable[timerID] = (maTmrTimerStatusTable[timerID] & ~mTimerStatusMask_c) | status;
 #endif
 }
 
@@ -380,19 +380,19 @@ static tmrTimerType_t TMR_GetTimerType
 (
     tmrTimerID_t timerID
 #if gTMR_EnableHWLowPowerTimers_d
-    ,tmrHwSourceType_t hwTmrType
-#endif    
+    , tmrHwSourceType_t hwTmrType
+#endif
 )
 {
 #if gTMR_EnableHWLowPowerTimers_d
-	
-	if(hwTmrType == tmrFTMbased_c)
-	{
-		return maTmrTimerStatusTable[timerID] & mTimerType_c;
-	}
-	
-	return maLpTmrTimerStatusTable[timerID] & mTimerType_c;
-    
+
+    if (hwTmrType == tmrFTMbased_c)
+    {
+        return maTmrTimerStatusTable[timerID] & mTimerType_c;
+    }
+
+    return maLpTmrTimerStatusTable[timerID] & mTimerType_c;
+
 #else
     return maTmrTimerStatusTable[timerID] & mTimerType_c;
 #endif
@@ -402,40 +402,42 @@ static tmrTimerType_t TMR_GetTimerType
 * NAME: TMR_SetTimerType
 * DESCRIPTION: Set the timer type
 * PARAMETERS:  IN: timerID - the timer ID
-* 			   IN: type - timer type
-* 			   IN: hwTmrType - FTM or LPTMR	
+*              IN: type - timer type
+*              IN: hwTmrType - FTM or LPTMR
 * RETURN: none
 * NOTES: none
 *---------------------------------------------------------------------------*/
 static void TMR_SetTimerType
 (
-    tmrTimerID_t timerID, 
+    tmrTimerID_t timerID,
     tmrTimerType_t type
 #if gTMR_EnableHWLowPowerTimers_d
-    ,tmrHwSourceType_t hwTmrType
-#endif    
+    , tmrHwSourceType_t hwTmrType
+#endif
 )
 {
-#if gTMR_EnableHWLowPowerTimers_d	
-	if(hwTmrType == tmrFTMbased_c)
-	{
-		maTmrTimerStatusTable[timerID] = (maTmrTimerStatusTable[timerID] & ~mTimerType_c) | type;
-	}
-	else
-	{
-		/*
-		 * gTmrLowPowerTimer_c is used only by the normal (FTM-based) timers and
-		 * this macro indicates a timer that will be synchronised after the MCU
-		 * will wake-up from low power mode. The macro has no mean for LPTMR-based
-		 * timers.
-		 */  
-		type &= ~gTmrLowPowerTimer_c;
-		maLpTmrTimerStatusTable[timerID] = (maLpTmrTimerStatusTable[timerID] & ~mTimerType_c) | type;		
-	}		    
+#if gTMR_EnableHWLowPowerTimers_d
+
+    if (hwTmrType == tmrFTMbased_c)
+    {
+        maTmrTimerStatusTable[timerID] = (maTmrTimerStatusTable[timerID] & ~mTimerType_c) | type;
+    }
+    else
+    {
+        /*
+         * gTmrLowPowerTimer_c is used only by the normal (FTM-based) timers and
+         * this macro indicates a timer that will be synchronised after the MCU
+         * will wake-up from low power mode. The macro has no mean for LPTMR-based
+         * timers.
+         */
+        type &= ~gTmrLowPowerTimer_c;
+        maLpTmrTimerStatusTable[timerID] = (maLpTmrTimerStatusTable[timerID] & ~mTimerType_c) | type;
+    }
+
 #else
     maTmrTimerStatusTable[timerID] = (maTmrTimerStatusTable[timerID] & ~mTimerType_c) | type;
 #endif
-} 
+}
 
 #if gTMR_EnableHWLowPowerTimers_d
 /*---------------------------------------------------------------------------
@@ -452,24 +454,27 @@ static void TMR_SetTimerType
  *---------------------------------------------------------------------------*/
 static void TMR_StartLpTimer
 (
-    tmrTimerID_t timerID,                       
-    tmrTimerType_t timerType,                   
-    tmrTimeInMilliseconds_t timeInMilliseconds, 
-    void (*pfTimerCallBack)(tmrTimerID_t)       
+    tmrTimerID_t timerID,
+    tmrTimerType_t timerType,
+    tmrTimeInMilliseconds_t timeInMilliseconds,
+    void (*pfTimerCallBack)(tmrTimerID_t)
 )
 {
     tmrTimerTicks32_t intervalInTicks;
-    
+
     /* check if timer is not allocated or if it has an invalid ID (fix@ENGR223389) */
-    if (!TMR_IsLpTimerAllocated(timerID) || (gTmrInvalidTimerID_c == timerID) || 
-    		(timerType == gTmrLowPowerTimer_c)) 
-      return;
+    if (!TMR_IsLpTimerAllocated(timerID) || (gTmrInvalidTimerID_c == timerID) ||
+        (timerType == gTmrLowPowerTimer_c))
+    {
+        return;
+    }
 
     /* Stopping an already stopped timer is harmless. */
     TMR_StopLpTimer(timerID);
-    
+
     intervalInTicks = timeInMilliseconds;
-    if (!intervalInTicks) 
+
+    if (!intervalInTicks)
     {
         intervalInTicks = 1;
     }
@@ -501,10 +506,10 @@ static void TMR_StartLpTimer
  *---------------------------------------------------------------------------*/
 tmrTimerTicks32_t TmrTicksFromMilliseconds
 (
-    tmrTimeInMilliseconds_t milliseconds   
+    tmrTimeInMilliseconds_t milliseconds
 )
 {
-    return (milliseconds * (mClkSourceKhz/(0x01<<gFTMxSC_PrescaleCount_c)));
+    return (milliseconds * (mClkSourceKhz / (0x01 << gFTMxSC_PrescaleCount_c)));
 }
 
 /*---------------------------------------------------------------------------
@@ -513,7 +518,7 @@ tmrTimerTicks32_t TmrTicksFromMilliseconds
  * PARAMETERS: -
  * RETURN: -
  *---------------------------------------------------------------------------*/
-void TMR_Init 
+void TMR_Init
 (
     void
 )
@@ -526,35 +531,35 @@ void TMR_Init
     NVIC_SetPriority(gTMR_FTMIrqNo, gTMR_FTMInterruptPriority);
 
     /* Setup the system clock gating */
-    gTMR_FTM_SIM_SCGC_REG_c |= (1<<gTMR_FTM_SIM_SCGC_BIT_c);
+    gTMR_FTM_SIM_SCGC_REG_c |= (1 << gTMR_FTM_SIM_SCGC_BIT_c);
 
-    /* Dummy read of the FTMx_SC register to clear the interrupt flag */                       
+    /* Dummy read of the FTMx_SC register to clear the interrupt flag */
     (void)(gFTMxSC_c == 0U);
     /* Stop the counter */
     gFTMxSC_c = (uint32_t)0x00UL;
     /* Dummy read of the FTMx_CnSC register to clear the interrupt flag */
-    (void)(gFTMxCnSC_c == 0U);             
+    (void)(gFTMxCnSC_c == 0U);
 
     /* Disable write protection */
     /* FTMx_MODE: WPDIS=1 */
-    gFTMxMODE_c |= (uint32_t)0x04UL;       
+    gFTMxMODE_c |= (uint32_t)0x04UL;
     /* FTMx_MODE: FTMEN=0 */
-    gFTMxMODE_c &= (uint32_t)~0x01UL;    
+    gFTMxMODE_c &= (uint32_t)~0x01UL;
 
     /* Clear modulo register */
-    gFTMxMOD_c = (uint32_t)0x00UL;	
+    gFTMxMOD_c = (uint32_t)0x00UL;
 
-    gFTMxCnSC_c = (uint32_t)0x50UL; 
+    gFTMxCnSC_c = (uint32_t)0x50UL;
 
-    mTimerTaskID = TS_CreateTask(gTsTimerTaskPriority_c, TMR_Task);    
-    
-    /* Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that the currentTimeInTicks 
+    mTimerTaskID = TS_CreateTask(gTsTimerTaskPriority_c, TMR_Task);
+
+    /* Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that the currentTimeInTicks
     will never roll over mPreviousTimeInTicks in the TMR_Task() */
-    mMaxToCountDown = 0xFFFF - TmrTicksFromMilliseconds(8); 
+    mMaxToCountDown = 0xFFFF - TmrTicksFromMilliseconds(8);
     /* The TMR_Task()event will not be issued faster than 4ms*/
     mTicksFor4ms = TmrTicksFromMilliseconds(4);
-        
-/* Low-Power Timer default configuration */
+
+    /* Low-Power Timer default configuration */
 #if gTMR_EnableHWLowPowerTimers_d
     /* turn on the LPTMR clock */
     SIM_SCGC5 |= SIM_SCGC5_LPTIMER_MASK;
@@ -563,14 +568,14 @@ void TMR_Init
 #if (cPWR_LPTMRClockSource == cLPTMR_Source_Int_LPO_1KHz)
     /* 1ms tick period */
     LPTMR0_PSR = (cLPTMR_PRS_00001ms | cPWR_LPTMRClockSource);
-#elif (cPWR_LPTMRClockSource == cLPTMR_Source_Ext_ERCLK32K)    
-  #if (MCU_MK60N512VMD100 == 1)	
+#elif (cPWR_LPTMRClockSource == cLPTMR_Source_Ext_ERCLK32K)
+#if (MCU_MK60N512VMD100 == 1)
     SIM_SOPT1 |= SIM_SOPT1_OSC32KSEL_MASK;
-  #elif ((MCU_MK60D10 == 1)  || (MCU_MK21DN512 == 1) || (MCU_MK21DX256 == 1))
+#elif ((MCU_MK60D10 == 1)  || (MCU_MK21DN512 == 1) || (MCU_MK21DX256 == 1))
     SIM_SOPT1 &= ~SIM_SOPT1_OSC32KSEL_MASK;
     SIM_SOPT1 |= SIM_SOPT1_OSC32KSEL(2);
-  #endif // (MCU_MK60N512VMD100 == 1)
-    /* init 32.768 KHz RTC OSC */    
+#endif // (MCU_MK60N512VMD100 == 1)
+    /* init 32.768 KHz RTC OSC */
     SIM_SCGC6 |= SIM_SCGC6_RTC_MASK;
     RTC_CR |= RTC_CR_SWR_MASK;
     RTC_CR &= ~(RTC_CR_SWR_MASK);
@@ -582,13 +587,13 @@ void TMR_Init
 #else
 #error "*** ERROR: Illegal value in cPWR_LPTMRClockSource"
 #endif
-            
+
     /* Enable LPTMR IRQ */
     NVIC_EnableIRQ(gTMR_LPTMR_IRQ_c);
     /* Set LPTMR IRQ priority */
     NVIC_SetPriority(gTMR_LPTMR_IRQ_c, gTMR_LPTMRInterruptPriority);
-           
-    /* Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that the currentTimeInTicks 
+
+    /* Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that the currentTimeInTicks
     will never roll over mPreviousTimeInTicks in the TMR_Task() */
     mLpTmrMaxToCountDown = 0xFFF7; /* 1 tick = 1 ms */
     /* The TMR_Task()event will not be issued faster than 4ms*/
@@ -609,9 +614,9 @@ void TMR_NotifyClkChanged
 {
     mClkSourceKhz = clkKhz;
     /* Clock was changed, so calculate again  mMaxToCountDown.
-    Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that the currentTimeInTicks 
+    Count to maximum (0xffff - 2*4ms(in ticks)), to be sure that the currentTimeInTicks
     will never roll over mPreviousTimeInTicks in the TMR_Task() */
-    mMaxToCountDown = 0xFFFF - TmrTicksFromMilliseconds(8); 
+    mMaxToCountDown = 0xFFFF - TmrTicksFromMilliseconds(8);
     /* The TMR_Task()event will not be issued faster than 4ms*/
     mTicksFor4ms = TmrTicksFromMilliseconds(4);
 }
@@ -628,22 +633,22 @@ tmrTimerID_t TMR_AllocateTimer
 )
 {
     uint32_t i;
-  
-    for (i = 0; i < NumberOfElements(maTmrTimerTable); ++i) 
+
+    for (i = 0; i < NumberOfElements(maTmrTimerTable); ++i)
     {
-        if (!TMR_IsTimerAllocated(i)) 
+        if (!TMR_IsTimerAllocated(i))
         {
-#if gTMR_EnableHWLowPowerTimers_d        	
+#if gTMR_EnableHWLowPowerTimers_d
             TMR_SetTimerStatus(i, mTmrStatusInactive_c, tmrFTMbased_c);
 #else
             TMR_SetTimerStatus(i, mTmrStatusInactive_c);
 #endif
             return i;
         }
-   }
-  
-   return gTmrInvalidTimerID_c;
-}   
+    }
+
+    return gTmrInvalidTimerID_c;
+}
 
 #if gTMR_EnableHWLowPowerTimers_d
 /*---------------------------------------------------------------------------
@@ -654,21 +659,21 @@ tmrTimerID_t TMR_AllocateTimer
  *---------------------------------------------------------------------------*/
 tmrTimerID_t TMR_AllocateLpTimer
 (
-    void 
+    void
 )
 {
-    uint32_t i;   
-  
-    for (i = 0; i < NumberOfElements(maLpTmrTimerTable); ++i) 
+    uint32_t i;
+
+    for (i = 0; i < NumberOfElements(maLpTmrTimerTable); ++i)
     {
-        if (!TMR_IsLpTimerAllocated(i)) 
+        if (!TMR_IsLpTimerAllocated(i))
         {
             TMR_SetTimerStatus(i, mTmrStatusInactive_c, tmrLPTMRbased_c);
             return i;
         }
-   }
-  
-   return gTmrInvalidTimerID_c;
+    }
+
+    return gTmrInvalidTimerID_c;
 }
 #endif /* gTMR_EnableHWLowPowerTimers_d */
 
@@ -684,7 +689,7 @@ bool_t TMR_AreAllTimersOff
 )
 {
     return !mNumberOfActiveTimers;
-} 
+}
 
 #if gTMR_EnableHWLowPowerTimers_d
 /*---------------------------------------------------------------------------
@@ -733,8 +738,8 @@ void TMR_FreeLpTimer
     tmrTimerID_t timerID
 )
 {
-	TMR_StopLpTimer(timerID);
-	TMR_MarkLpTimerFree(timerID);
+    TMR_StopLpTimer(timerID);
+    TMR_MarkLpTimerFree(timerID);
 }
 #endif
 
@@ -751,19 +756,19 @@ void TMR_FreeLpTimer
 void TMR_InterruptHandler
 (
     void
-) 
+)
 {
     /* Clearing the overflow flag requires reading it and then writing it. */
 
-    if(gFTMxSC_c & gFTMxSC_TOF_c) 
+    if (gFTMxSC_c & gFTMxSC_TOF_c)
     {
         gFTMxSC_c  &= ~ gFTMxSC_TOF_c;
     }
 
-    if ( gFTMxCnSC_c & gFTMxCnSC_CHF_c ) 
+    if (gFTMxCnSC_c & gFTMxCnSC_CHF_c)
     {
         gFTMxCnSC_c &= ~gFTMxCnSC_CHF_c;
-        TS_SendEvent(mTimerTaskID, gTMR_Event_c);    
+        TS_SendEvent(mTimerTaskID, gTMR_Event_c);
     }
 }
 
@@ -784,8 +789,8 @@ void PWRLib_LPTMR_Isr
     void
 )
 {
-	LPTMR0_CSR |= LPTMR_CSR_TCF_MASK; /* w1c */
-	TS_SendEvent(mTimerTaskID, gLPTMR_Event_c); 
+    LPTMR0_CSR |= LPTMR_CSR_TCF_MASK; /* w1c */
+    TS_SendEvent(mTimerTaskID, gLPTMR_Event_c);
 }
 #endif /* #if gTMR_EnableHWLowPowerTimers_d */
 
@@ -801,7 +806,7 @@ bool_t TMR_IsTimerActive
     tmrTimerID_t timerID
 )
 {
-#if gTMR_EnableHWLowPowerTimers_d  
+#if gTMR_EnableHWLowPowerTimers_d
     return (TMR_GetTimerStatus(timerID, tmrLPTMRbased_c) == mTmrStatusActive_c);
 #else
     return (TMR_GetTimerStatus(timerID) == mTmrStatusActive_c);
@@ -837,12 +842,12 @@ bool_t TMR_IsTimerReady
     tmrTimerID_t timerID
 )
 {
-#if gTMR_EnableHWLowPowerTimers_d	
+#if gTMR_EnableHWLowPowerTimers_d
     return (TMR_GetTimerStatus(timerID, tmrFTMbased_c) == mTmrStatusReady_c);
 #else
     return (TMR_GetTimerStatus(timerID) == mTmrStatusReady_c);
 #endif
-} 
+}
 
 #if gTMR_EnableHWLowPowerTimers_d
 /*---------------------------------------------------------------------------
@@ -874,39 +879,50 @@ uint32_t TMR_GetRemainingTime
     tmrTimerID_t tmrID
 )
 {
-  tmrTimerTicks32_t remainingTime, currentTime, elapsedTicks;
-  unsigned int saveInt;
-  
-  if(gTmrInvalidTimerID_c == tmrID)
-    return 0;
-  
-  if(!maTmrTimerTable[tmrID].remainingTicks)
-    return 0;
-  
-  saveInt = IntDisableAll(); 
-  
-  FTMReadCNTRegister(currentTime);
-  
-  if(currentTime < maTmrTimerTable[tmrID].timestamp)
-  {
-    currentTime += (uint32_t)gFTM_CNT_OVERFLOW_VALUE_c;
-  }
-  
-  elapsedTicks = currentTime - maTmrTimerTable[tmrID].timestamp;
-  
-  if(elapsedTicks > maTmrTimerTable[tmrID].remainingTicks)
-  {
-    IntRestoreAll(saveInt);
-    return 1;
-  }
-  
-  if((maTmrTimerTable[tmrID].remainingTicks - elapsedTicks) > mClkSourceKhz)
-    remainingTime = ((maTmrTimerTable[tmrID].remainingTicks - elapsedTicks)/mClkSourceKhz) * (1 << gFTMxSC_PrescaleCount_c);
-  else  
-    remainingTime = ((maTmrTimerTable[tmrID].remainingTicks - elapsedTicks) * (1 << gFTMxSC_PrescaleCount_c))/mClkSourceKhz;
-  IntRestoreAll(saveInt);
+    tmrTimerTicks32_t remainingTime, currentTime, elapsedTicks;
+    unsigned int saveInt;
 
-  return remainingTime;
+    if (gTmrInvalidTimerID_c == tmrID)
+    {
+        return 0;
+    }
+
+    if (!maTmrTimerTable[tmrID].remainingTicks)
+    {
+        return 0;
+    }
+
+    saveInt = IntDisableAll();
+
+    FTMReadCNTRegister(currentTime);
+
+    if (currentTime < maTmrTimerTable[tmrID].timestamp)
+    {
+        currentTime += (uint32_t)gFTM_CNT_OVERFLOW_VALUE_c;
+    }
+
+    elapsedTicks = currentTime - maTmrTimerTable[tmrID].timestamp;
+
+    if (elapsedTicks > maTmrTimerTable[tmrID].remainingTicks)
+    {
+        IntRestoreAll(saveInt);
+        return 1;
+    }
+
+    if ((maTmrTimerTable[tmrID].remainingTicks - elapsedTicks) > mClkSourceKhz)
+    {
+        remainingTime = ((maTmrTimerTable[tmrID].remainingTicks - elapsedTicks) / mClkSourceKhz) *
+                        (1 << gFTMxSC_PrescaleCount_c);
+    }
+    else
+    {
+        remainingTime = ((maTmrTimerTable[tmrID].remainingTicks - elapsedTicks) * (1 << gFTMxSC_PrescaleCount_c)) /
+                        mClkSourceKhz;
+    }
+
+    IntRestoreAll(saveInt);
+
+    return remainingTime;
 }
 
 #if gTMR_EnableHWLowPowerTimers_d
@@ -922,38 +938,42 @@ uint32_t TMR_GetLpRemainingTime
     tmrTimerID_t tmrID
 )
 {
-  tmrTimerTicks32_t remainingTime, currentTime, elapsedTicks;
-  unsigned int saveInt;
-  
-  if(gTmrInvalidTimerID_c == tmrID)
-    return 0;
-  
-  if(!maLpTmrTimerTable[tmrID].remainingTicks)
-    return 0;
-  
-  saveInt = IntDisableAll();
-  
-  LPTMRReadCounterRegister(currentTime);
-  
-  if(currentTime < maLpTmrTimerTable[tmrID].timestamp)
-  {
-    currentTime += (uint32_t)gLPTMR_OVERFLOW_VALUE_c;
-  }
-  
-  elapsedTicks = currentTime - maLpTmrTimerTable[tmrID].timestamp;
-  
-  if(elapsedTicks > maLpTmrTimerTable[tmrID].remainingTicks)
-  {
+    tmrTimerTicks32_t remainingTime, currentTime, elapsedTicks;
+    unsigned int saveInt;
+
+    if (gTmrInvalidTimerID_c == tmrID)
+    {
+        return 0;
+    }
+
+    if (!maLpTmrTimerTable[tmrID].remainingTicks)
+    {
+        return 0;
+    }
+
+    saveInt = IntDisableAll();
+
+    LPTMRReadCounterRegister(currentTime);
+
+    if (currentTime < maLpTmrTimerTable[tmrID].timestamp)
+    {
+        currentTime += (uint32_t)gLPTMR_OVERFLOW_VALUE_c;
+    }
+
+    elapsedTicks = currentTime - maLpTmrTimerTable[tmrID].timestamp;
+
+    if (elapsedTicks > maLpTmrTimerTable[tmrID].remainingTicks)
+    {
+        IntRestoreAll(saveInt);
+        return 1;
+    }
+
+    /* 1 tick period = 1 ms */
+    remainingTime = (maLpTmrTimerTable[tmrID].remainingTicks - elapsedTicks);
+
     IntRestoreAll(saveInt);
-    return 1;
-  }
-  
-  /* 1 tick period = 1 ms */
-  remainingTime = (maLpTmrTimerTable[tmrID].remainingTicks - elapsedTicks);
-  
-  IntRestoreAll(saveInt);
-  
-  return remainingTime;
+
+    return remainingTime;
 }
 #endif /* gTMR_EnableHWLowPowerTimers_d */
 
@@ -978,20 +998,23 @@ void TMR_StartTimer
 )
 {
     tmrTimerTicks32_t intervalInTicks;
-    
+
     /* check if timer is not allocated or if it has an invalid ID (fix@ENGR223389) */
-    if (!TMR_IsTimerAllocated(timerID) || (gTmrInvalidTimerID_c == timerID)) 
-      return;
+    if (!TMR_IsTimerAllocated(timerID) || (gTmrInvalidTimerID_c == timerID))
+    {
+        return;
+    }
 
     /* Stopping an already stopped timer is harmless. */
     TMR_StopTimer(timerID);
 
     intervalInTicks = TmrTicksFromMilliseconds(timeInMilliseconds);
-    if (!intervalInTicks) 
+
+    if (!intervalInTicks)
     {
         intervalInTicks = 1;
     }
-    
+
 #if gTMR_EnableHWLowPowerTimers_d
     TMR_SetTimerType(timerID, timerType, tmrFTMbased_c);
 #else
@@ -1008,16 +1031,16 @@ void TMR_StartTimer
 
 /*---------------------------------------------------------------------------
  * NAME: TMR_StartLowPowerTimer
- * DESCRIPTION: Start a low power timer. When the timer goes off, call the 
- *              callback function in non-interrupt context. 
- *              If the timer is running when this function is called, it will 
- *              be stopped and restarted. 
+ * DESCRIPTION: Start a low power timer. When the timer goes off, call the
+ *              callback function in non-interrupt context.
+ *              If the timer is running when this function is called, it will
+ *              be stopped and restarted.
  *              Start the timer with the following timer types:
  *                          - gTmrLowPowerMinuteTimer_c
  *                          - gTmrLowPowerSecondTimer_c
  *                          - gTmrLowPowerSingleShotMillisTimer_c
  *                          - gTmrLowPowerIntervalMillisTimer_c
- *              The MCU can enter in low power if there are only active low 
+ *              The MCU can enter in low power if there are only active low
  *              power timers.
  * PARAMETERS: IN: timerId - the ID of the timer
  *             IN: timerType - the type of the timer
@@ -1031,20 +1054,20 @@ void TMR_StartLowPowerTimer
     tmrTimerType_t timerType,
     uint32_t timeIn,
     void (*pfTmrCallBack)(tmrTimerID_t)
-) 
+)
 {
-#if(gTMR_EnableLowPowerTimers_d) 
-	/* FTM-based timers that are sync. after system wake-up */
-    TMR_StartTimer(timerId, timerType | gTmrLowPowerTimer_c, timeIn, 
+#if(gTMR_EnableLowPowerTimers_d)
+    /* FTM-based timers that are sync. after system wake-up */
+    TMR_StartTimer(timerId, timerType | gTmrLowPowerTimer_c, timeIn,
                    pfTmrCallBack);
 #elif gTMR_EnableHWLowPowerTimers_d
     /* LPTMR-based timers */
-     TMR_StartLpTimer(timerId, timerType, timeIn, pfTmrCallBack);
+    TMR_StartLpTimer(timerId, timerType, timeIn, pfTmrCallBack);
 #else
     (void)timerId;
     (void)timerType;
     (void)timeIn;
-	(void)pfTmrCallBack;
+    (void)pfTmrCallBack;
 #endif
 }
 
@@ -1058,15 +1081,15 @@ void TMR_StartLowPowerTimer
  * NOTES: Customized form of TMR_StartTimer(). This is a single shot timer.
  *        There are no interval minute timers.
  *---------------------------------------------------------------------------*/
- #if gTMR_EnableMinutesSecondsTimers_d
+#if gTMR_EnableMinutesSecondsTimers_d
 void TMR_StartMinuteTimer
 (
-    tmrTimerID_t timerId, 
-    tmrTimeInMinutes_t timeInMinutes, 
+    tmrTimerID_t timerId,
+    tmrTimeInMinutes_t timeInMinutes,
     void (*pfTmrCallBack)(tmrTimerID_t)
 )
 {
-    TMR_StartTimer(timerId, gTmrMinuteTimer_c, TmrMinutes(timeInMinutes), pfTmrCallBack);   
+    TMR_StartTimer(timerId, gTmrMinuteTimer_c, TmrMinutes(timeInMinutes), pfTmrCallBack);
 }
 
 #if gTMR_EnableHWLowPowerTimers_d
@@ -1082,17 +1105,17 @@ void TMR_StartMinuteTimer
  *---------------------------------------------------------------------------*/
 void TMR_StartLpMinuteTimer
 (
-    tmrTimerID_t timerId, 
-    tmrTimeInMinutes_t timeInMinutes, 
+    tmrTimerID_t timerId,
+    tmrTimeInMinutes_t timeInMinutes,
     void (*pfTmrCallBack)(tmrTimerID_t)
 )
 {
-    TMR_StartLowPowerTimer(timerId, gTmrMinuteTimer_c, TmrMinutes(timeInMinutes), pfTmrCallBack);    
+    TMR_StartLowPowerTimer(timerId, gTmrMinuteTimer_c, TmrMinutes(timeInMinutes), pfTmrCallBack);
 }
 
 #endif /* gTMR_EnableHWLowPowerTimers_d */
 #endif /* gTMR_EnableMinutesSecondsTimers_d */
-  
+
 /*---------------------------------------------------------------------------
  * NAME: TMR_StartSecondTimer
  * DESCRIPTION: Starts a seconds timer
@@ -1106,10 +1129,10 @@ void TMR_StartLpMinuteTimer
 #if gTMR_EnableMinutesSecondsTimers_d
 void TMR_StartSecondTimer
 (
-    tmrTimerID_t timerId, 
-    tmrTimeInSeconds_t timeInSeconds, 
+    tmrTimerID_t timerId,
+    tmrTimeInSeconds_t timeInSeconds,
     void (*pfTmrCallBack)(tmrTimerID_t)
-) 
+)
 {
     TMR_StartTimer(timerId, gTmrSecondTimer_c, TmrSeconds(timeInSeconds), pfTmrCallBack);
 }
@@ -1126,16 +1149,16 @@ void TMR_StartSecondTimer
  *---------------------------------------------------------------------------*/
 void TMR_StartLpSecondTimer
 (
-    tmrTimerID_t timerId, 
-    tmrTimeInSeconds_t timeInSeconds, 
+    tmrTimerID_t timerId,
+    tmrTimeInSeconds_t timeInSeconds,
     void (*pfTmrCallBack)(tmrTimerID_t)
-) 
+)
 {
     TMR_StartLowPowerTimer(timerId, gTmrSecondTimer_c, TmrSeconds(timeInSeconds), pfTmrCallBack);
 }
 #endif /* gTMR_EnableHWLowPowerTimers_d */
 #endif /* gTMR_EnableMinutesSecondsTimers_d */
- 
+
 /*---------------------------------------------------------------------------
  * NAME: TMR_StartIntervalTimer
  * DESCRIPTION: Starts an interval count timer
@@ -1232,33 +1255,36 @@ void TMR_StopTimer
 {
     tmrStatus_t status;
     unsigned int saveInt;
-    
+
     saveInt = IntDisableAll();
-    
-#if gTMR_EnableHWLowPowerTimers_d    
+
+#if gTMR_EnableHWLowPowerTimers_d
     status = TMR_GetTimerStatus(timerID, tmrFTMbased_c);
 #else
     status = TMR_GetTimerStatus(timerID);
 #endif
-    
-    if ( (status == mTmrStatusActive_c) || (status == mTmrStatusReady_c) ) 
+
+    if ((status == mTmrStatusActive_c) || (status == mTmrStatusReady_c))
     {
-#if gTMR_EnableHWLowPowerTimers_d    	
+#if gTMR_EnableHWLowPowerTimers_d
         TMR_SetTimerStatus(timerID, mTmrStatusInactive_c, tmrFTMbased_c);
 #else
         TMR_SetTimerStatus(timerID, mTmrStatusInactive_c);
 #endif
-        
-#if gTMR_EnableHWLowPowerTimers_d        
+
+#if gTMR_EnableHWLowPowerTimers_d
         DecrementActiveTimerNumber(TMR_GetTimerType(timerID, tmrFTMbased_c));
 #else
         DecrementActiveTimerNumber(TMR_GetTimerType(timerID));
 #endif
+
         /* if no sw active timers are enabled, */
         /* call the TMR_Task() to countdown the ticks and stop the hw timer*/
-        if (!mNumberOfActiveTimers && !mNumberOfLowPowerActiveTimers) 
+        if (!mNumberOfActiveTimers && !mNumberOfLowPowerActiveTimers)
+        {
             TS_SendEvent(mTimerTaskID, gTMR_Event_c);
-    }	
+        }
+    }
 
     IntRestoreAll(saveInt);
 }
@@ -1277,19 +1303,22 @@ void TMR_StopLpTimer
 {
     tmrStatus_t status;
     unsigned int saveInt;
-    
+
     saveInt = IntDisableAll();
     status = TMR_GetTimerStatus(timerID, tmrLPTMRbased_c);
-    
-    if ( (status == mTmrStatusActive_c) || (status == mTmrStatusReady_c) ) 
+
+    if ((status == mTmrStatusActive_c) || (status == mTmrStatusReady_c))
     {
         TMR_SetTimerStatus(timerID, mTmrStatusInactive_c, tmrLPTMRbased_c);
         DecrementActiveLpTmrTimerNumber();
+
         /* if no sw active timers are enabled, */
         /* call the TMR_Task() to countdown the ticks and stop the hw timer*/
-        if (!mLpTmrNumberOfActiveTimers) 
+        if (!mLpTmrNumberOfActiveTimers)
+        {
             TS_SendEvent(mTimerTaskID, gLPTMR_Event_c);
-    }	
+        }
+    }
 
     IntRestoreAll(saveInt);
 }
@@ -1297,7 +1326,7 @@ void TMR_StopLpTimer
 
 /*---------------------------------------------------------------------------
  * NAME: TMR_Task
- * DESCRIPTION: Timer task. 
+ * DESCRIPTION: Timer task.
  *              Called by the kernel when the timer ISR posts a timer event.
  * PARAMETERS:  IN: events - timer events mask
  * RETURN: None
@@ -1312,283 +1341,302 @@ void TMR_Task
     pfTmrCallBack_t pfCallBack;
     tmrTimerTicks16_t currentTimeInTicks;
     tmrTimerStatus_t status;
-    tmrTimerTicks16_t ticksSinceLastHere, ticksdiff; 
+    tmrTimerTicks16_t ticksSinceLastHere, ticksdiff;
     uint8_t timerID;
     unsigned int saveInt;
     tmrTimerType_t timerType;
-    
+
 #if gTMR_EnableHWLowPowerTimers_d
-    tmrTimerTicks16_t lptmr_nextInterruptTime;    
-    tmrTimerTicks16_t lptmr_currentTimeInTicks;    
-    tmrTimerTicks16_t lptmr_ticksSinceLastHere, lptmr_ticksdiff; 
+    tmrTimerTicks16_t lptmr_nextInterruptTime;
+    tmrTimerTicks16_t lptmr_currentTimeInTicks;
+    tmrTimerTicks16_t lptmr_ticksSinceLastHere, lptmr_ticksdiff;
 #endif
-    
-    /* sample the current ticks */    
+
+    /* sample the current ticks */
     saveInt = IntDisableAll();
     FTMReadCNTRegister(currentTimeInTicks);
 #if gTMR_EnableHWLowPowerTimers_d
     LPTMRReadCounterRegister(lptmr_currentTimeInTicks);
 #endif
     IntRestoreAll(saveInt);
-    
-#if gTMR_EnableHWLowPowerTimers_d    
-    if(events & gTMR_Event_c)
+
+#if gTMR_EnableHWLowPowerTimers_d
+
+    if (events & gTMR_Event_c)
     {
 #else
-    	(void)events;	
-#endif    	
-    	/* calculate difference between current and previous.  */
-    	ticksSinceLastHere = (currentTimeInTicks - mPreviousTimeInTicks);
-    	/* remember for next time */
-    	mPreviousTimeInTicks = currentTimeInTicks;
-
-    	for (timerID = 0; timerID < NumberOfElements(maTmrTimerTable); ++timerID) 
-    	{
-    		saveInt = IntDisableAll();
-#if gTMR_EnableHWLowPowerTimers_d    	
-    		status = TMR_GetTimerStatus(timerID, tmrFTMbased_c);
-#else
-    		status = TMR_GetTimerStatus(timerID);
-#endif /* gTMR_EnableHWLowPowerTimers_d */
-    		/* If TMR_StartTimer() has been called for this timer, start it's count */
-    		/* down as of now. */
-    		if (status == mTmrStatusReady_c) 
-    		{
-#if gTMR_EnableHWLowPowerTimers_d    		
-    			TMR_SetTimerStatus(timerID, mTmrStatusActive_c, tmrFTMbased_c);
-#else
-    			TMR_SetTimerStatus(timerID, mTmrStatusActive_c);
+    (void)events;
 #endif
-    			IntRestoreAll(saveInt);
-    			continue;
-    		}
-    		IntRestoreAll(saveInt);
+        /* calculate difference between current and previous.  */
+        ticksSinceLastHere = (currentTimeInTicks - mPreviousTimeInTicks);
+        /* remember for next time */
+        mPreviousTimeInTicks = currentTimeInTicks;
 
-    		/* Ignore any timer that is not active. */
-    		if (status != mTmrStatusActive_c) 
-    		{
-    			continue;
-    		}
-
-    		/* This timer is active. Decrement it's countdown.. */
-    		if (maTmrTimerTable[timerID].remainingTicks > ticksSinceLastHere) 
-    		{
-    			maTmrTimerTable[timerID].remainingTicks -= ticksSinceLastHere;
-                        FTMReadCNTRegister(maTmrTimerTable[timerID].timestamp);
-    			continue;
-    		}
+        for (timerID = 0; timerID < NumberOfElements(maTmrTimerTable); ++timerID)
+        {
+            saveInt = IntDisableAll();
 #if gTMR_EnableHWLowPowerTimers_d
-    		timerType = TMR_GetTimerType(timerID, tmrFTMbased_c);
+            status = TMR_GetTimerStatus(timerID, tmrFTMbased_c);
 #else
-    		timerType = TMR_GetTimerType(timerID);
-#endif
-    		/* If this is an interval timer, restart it. Otherwise, mark it as inactive. */
-    		if ( (timerType & gTmrSingleShotTimer_c) ||
-    				(timerType & gTmrSetMinuteTimer_c) ||
-    				(timerType & gTmrSetSecondTimer_c)  ) 
-    		{
-    			TMR_StopTimer(timerID);
-    		} 
-    		else 
-    		{
-    			maTmrTimerTable[timerID].remainingTicks = maTmrTimerTable[timerID].intervalInTicks;
-                        FTMReadCNTRegister(maTmrTimerTable[timerID].timestamp);
-    		}
-    		/* This timer has expired. */
-    		pfCallBack = maTmrTimerTable[timerID].pfCallBack;
-    		/*Call callback if it is not NULL
-    	    	        This is done after the timer got updated,
-    	    	        in case the timer gets stopped or restarted in the callback*/
-    		if (pfCallBack) 
-    		{
-    			pfCallBack(timerID);
-    		}
-    	}  /* for (timerID = 0; timerID < ... */
+            status = TMR_GetTimerStatus(timerID);
+#endif /* gTMR_EnableHWLowPowerTimers_d */
 
-    	/* Find the shortest active timer. */
-    	nextInterruptTime = mMaxToCountDown;
-
-    	for (timerID = 0; timerID < NumberOfElements(maTmrTimerTable); ++timerID) 
-    	{
-#if gTMR_EnableHWLowPowerTimers_d    	
-    		if (TMR_GetTimerStatus(timerID, tmrFTMbased_c) == mTmrStatusActive_c)
+            /* If TMR_StartTimer() has been called for this timer, start it's count */
+            /* down as of now. */
+            if (status == mTmrStatusReady_c)
+            {
+#if gTMR_EnableHWLowPowerTimers_d
+                TMR_SetTimerStatus(timerID, mTmrStatusActive_c, tmrFTMbased_c);
 #else
-    			if (TMR_GetTimerStatus(timerID) == mTmrStatusActive_c)
+                TMR_SetTimerStatus(timerID, mTmrStatusActive_c);
 #endif
-    			{
-    				if (nextInterruptTime > maTmrTimerTable[timerID].remainingTicks) 
-    				{
-    					nextInterruptTime = maTmrTimerTable[timerID].remainingTicks;
-    				}
-    			}
-    	}
+                IntRestoreAll(saveInt);
+                continue;
+            }
 
-    	saveInt = IntDisableAll();
+            IntRestoreAll(saveInt);
 
-    	/* Check to be sure that the timer was not programmed in the past for different source clocks.
-    	 * The interrupts are now disabled.
-    	 */
-    	FTMReadCNTRegister(ticksdiff);  
+            /* Ignore any timer that is not active. */
+            if (status != mTmrStatusActive_c)
+            {
+                continue;
+            }
 
-    	/* Number of ticks to be here */
-    	ticksdiff = (uint16_t)(ticksdiff - currentTimeInTicks); 
+            /* This timer is active. Decrement it's countdown.. */
+            if (maTmrTimerTable[timerID].remainingTicks > ticksSinceLastHere)
+            {
+                maTmrTimerTable[timerID].remainingTicks -= ticksSinceLastHere;
+                FTMReadCNTRegister(maTmrTimerTable[timerID].timestamp);
+                continue;
+            }
 
-    	/* Next ticks to count already expired?? */
-    	if(ticksdiff >= nextInterruptTime)
-    	{  
-    		/* Is assumed that a task has to be executed in 4ms...
-    	    	    so if the ticks already expired enter in TMR_Task() after 4ms*/
-    		nextInterruptTime = ticksdiff + mTicksFor4ms;
-    	} 
-    	else 
-    	{
-    		/* Time reference is 4ms, so be sure that won't be loaded 
-    	    	           in Cmp Reg. less that 4ms in ticks */
-    		if((nextInterruptTime - ticksdiff) < mTicksFor4ms) 
-    		{
-    			nextInterruptTime = ticksdiff + mTicksFor4ms;
-    		}
-    	}
-    	/* Update the compare register */
-    	nextInterruptTime += currentTimeInTicks;
-    	gFTMxCnV_c = nextInterruptTime;
-    	IntRestoreAll(saveInt);
-
-    	if (!mNumberOfActiveTimers && !mNumberOfLowPowerActiveTimers) 
-    	{
-    		FTMStopTimerHardware();
-    		mTimerHardwareIsRunning = FALSE;
-    	} 
-    	else if (!mTimerHardwareIsRunning) 
-    	{
-    		FTMStartTimerHardware();
-    		mTimerHardwareIsRunning = TRUE;
-    	}    	
-#if gTMR_EnableHWLowPowerTimers_d    	
-    }
+#if gTMR_EnableHWLowPowerTimers_d
+            timerType = TMR_GetTimerType(timerID, tmrFTMbased_c);
+#else
+            timerType = TMR_GetTimerType(timerID);
 #endif
-    
-/*
- * handle LPTMR-based software timers
- */    
-#if gTMR_EnableHWLowPowerTimers_d    
-    if(events & gLPTMR_Event_c)
-    {    	
-    	/* calculate difference between current and previous.  */
-    	lptmr_ticksSinceLastHere = (lptmr_currentTimeInTicks - mLpTmrPreviousTimeInTicks);
-    	/* remember for next time */
-    	mLpTmrPreviousTimeInTicks = lptmr_currentTimeInTicks;
 
-    	for (timerID = 0; timerID < NumberOfElements(maLpTmrTimerTable); ++timerID) 
-    	{
-    		saveInt = IntDisableAll();
-    		status = TMR_GetTimerStatus(timerID, tmrLPTMRbased_c);
-    		/* If TMR_StartTimer() has been called for this timer, start it's count */
-    		/* down as of now. */
-    		if (status == mTmrStatusReady_c) 
-    		{
-    			TMR_SetTimerStatus(timerID, mTmrStatusActive_c, tmrLPTMRbased_c);
-    			IntRestoreAll(saveInt);
-    			continue;
-    		}
-    		IntRestoreAll(saveInt);
+            /* If this is an interval timer, restart it. Otherwise, mark it as inactive. */
+            if ((timerType & gTmrSingleShotTimer_c) ||
+                (timerType & gTmrSetMinuteTimer_c) ||
+                (timerType & gTmrSetSecondTimer_c))
+            {
+                TMR_StopTimer(timerID);
+            }
+            else
+            {
+                maTmrTimerTable[timerID].remainingTicks = maTmrTimerTable[timerID].intervalInTicks;
+                FTMReadCNTRegister(maTmrTimerTable[timerID].timestamp);
+            }
 
-    		/* Ignore any timer that is not active. */
-    		if (status != mTmrStatusActive_c) 
-    		{
-    			continue;
-    		}
+            /* This timer has expired. */
+            pfCallBack = maTmrTimerTable[timerID].pfCallBack;
 
-    		/* This timer is active. Decrement it's countdown.. */
-    		if (maLpTmrTimerTable[timerID].remainingTicks > lptmr_ticksSinceLastHere) 
-    		{
-    			maLpTmrTimerTable[timerID].remainingTicks -= lptmr_ticksSinceLastHere;
-                        LPTMRReadCounterRegister(maLpTmrTimerTable[timerID].timestamp);
-    			continue;
-    		}
+            /*Call callback if it is not NULL
+                        This is done after the timer got updated,
+                        in case the timer gets stopped or restarted in the callback*/
+            if (pfCallBack)
+            {
+                pfCallBack(timerID);
+            }
+        }  /* for (timerID = 0; timerID < ... */
 
-    		timerType = TMR_GetTimerType(timerID, tmrLPTMRbased_c);
-    		/* If this is an interval timer, restart it. Otherwise, mark it as inactive. */
-    		if ( (timerType & gTmrSingleShotTimer_c) ||
-    				(timerType & gTmrSetMinuteTimer_c) ||
-    				(timerType & gTmrSetSecondTimer_c)  ) 
-    		{
-    			TMR_StopLpTimer(timerID);
-    		} 
-    		else 
-    		{
-    			/* reload */
-    			maLpTmrTimerTable[timerID].remainingTicks = maLpTmrTimerTable[timerID].intervalInTicks;
-                        LPTMRReadCounterRegister(maLpTmrTimerTable[timerID].timestamp);
-    		}
-    		/* This timer has expired. */
-    		pfCallBack = maLpTmrTimerTable[timerID].pfCallBack;
-    		/*Call callback if it is not NULL
-    	    	        This is done after the timer got updated,
-    	    	        in case the timer gets stopped or restarted in the callback*/
-    		if (pfCallBack) 
-    		{
-    			pfCallBack(timerID);
-    		}
-    	}  /* for (timerID = 0; timerID < ... */
+        /* Find the shortest active timer. */
+        nextInterruptTime = mMaxToCountDown;
 
-    	/* Find the shortest active timer. */
-    	lptmr_nextInterruptTime = mLpTmrMaxToCountDown;
+        for (timerID = 0; timerID < NumberOfElements(maTmrTimerTable); ++timerID)
+        {
+#if gTMR_EnableHWLowPowerTimers_d
 
-    	for (timerID = 0; timerID < NumberOfElements(maLpTmrTimerTable); ++timerID) 
-    	{
-    		if (TMR_GetTimerStatus(timerID, tmrLPTMRbased_c) == mTmrStatusActive_c) 
-    		{
-    			if (lptmr_nextInterruptTime > maLpTmrTimerTable[timerID].remainingTicks) 
-    			{
-    				lptmr_nextInterruptTime = maLpTmrTimerTable[timerID].remainingTicks;
-    			}
-    		}
-    	}
+            if (TMR_GetTimerStatus(timerID, tmrFTMbased_c) == mTmrStatusActive_c)
+#else
+            if (TMR_GetTimerStatus(timerID) == mTmrStatusActive_c)
+#endif
+            {
+                if (nextInterruptTime > maTmrTimerTable[timerID].remainingTicks)
+                {
+                    nextInterruptTime = maTmrTimerTable[timerID].remainingTicks;
+                }
+            }
+        }
 
-    	saveInt = IntDisableAll();
+        saveInt = IntDisableAll();
 
-    	/* Check to be sure that the timer was not programmed in the past for different source clocks.
-    	 * The interrupts are now disabled.
-    	 */
-    	LPTMRReadCounterRegister(lptmr_ticksdiff);  
+        /* Check to be sure that the timer was not programmed in the past for different source clocks.
+         * The interrupts are now disabled.
+         */
+        FTMReadCNTRegister(ticksdiff);
 
-    	/* Number of ticks to be here */
-    	lptmr_ticksdiff = (uint16_t)(lptmr_ticksdiff - lptmr_currentTimeInTicks); 
+        /* Number of ticks to be here */
+        ticksdiff = (uint16_t)(ticksdiff - currentTimeInTicks);
 
-    	/* Next ticks to count already expired?? */
-    	if(lptmr_ticksdiff >= lptmr_nextInterruptTime)
-    	{  
-    		/* Is assumed that a task has to be executed in 4ms...
-    	    	    so if the ticks already expired enter in TMR_Task() after 4ms*/
-    		lptmr_nextInterruptTime = lptmr_ticksdiff + mLpTmrTicksFor4ms;
-    	} 
-    	else 
-    	{
-    		/* Time reference is 4ms, so be sure that won't be loaded 
-    	    	           in Cmp Reg. less that 4ms in ticks */
-    		if((lptmr_nextInterruptTime - lptmr_ticksdiff) < mLpTmrTicksFor4ms) 
-    		{
-    			lptmr_nextInterruptTime = lptmr_ticksdiff + mLpTmrTicksFor4ms;
-    		}
-    	}
-    	/* Update the compare register */
-    	lptmr_nextInterruptTime += lptmr_currentTimeInTicks;
-    	LPTMR0_CMR = lptmr_nextInterruptTime;
-    	IntRestoreAll(saveInt);
+        /* Next ticks to count already expired?? */
+        if (ticksdiff >= nextInterruptTime)
+        {
+            /* Is assumed that a task has to be executed in 4ms...
+                    so if the ticks already expired enter in TMR_Task() after 4ms*/
+            nextInterruptTime = ticksdiff + mTicksFor4ms;
+        }
+        else
+        {
+            /* Time reference is 4ms, so be sure that won't be loaded
+                           in Cmp Reg. less that 4ms in ticks */
+            if ((nextInterruptTime - ticksdiff) < mTicksFor4ms)
+            {
+                nextInterruptTime = ticksdiff + mTicksFor4ms;
+            }
+        }
 
-    	if (!mLpTmrNumberOfActiveTimers) 
-    	{
-    		LPTMRStopTimerHardware();
-    		mLpTmrHardwareIsRunning = FALSE;
-    	} 
-    	else if (!mLpTmrHardwareIsRunning) 
-    	{
-    		LPTMRStartTimerHardware();
-    		mLpTmrHardwareIsRunning = TRUE;
-    	}
+        /* Update the compare register */
+        nextInterruptTime += currentTimeInTicks;
+        gFTMxCnV_c = nextInterruptTime;
+        IntRestoreAll(saveInt);
+
+        if (!mNumberOfActiveTimers && !mNumberOfLowPowerActiveTimers)
+        {
+            FTMStopTimerHardware();
+            mTimerHardwareIsRunning = FALSE;
+        }
+        else if (!mTimerHardwareIsRunning)
+        {
+            FTMStartTimerHardware();
+            mTimerHardwareIsRunning = TRUE;
+        }
+
+#if gTMR_EnableHWLowPowerTimers_d
     }
-#endif    
+
+#endif
+
+    /*
+     * handle LPTMR-based software timers
+     */
+#if gTMR_EnableHWLowPowerTimers_d
+
+    if (events &gLPTMR_Event_c)
+    {
+        /* calculate difference between current and previous.  */
+        lptmr_ticksSinceLastHere = (lptmr_currentTimeInTicks - mLpTmrPreviousTimeInTicks);
+        /* remember for next time */
+        mLpTmrPreviousTimeInTicks = lptmr_currentTimeInTicks;
+
+        for (timerID = 0; timerID < NumberOfElements(maLpTmrTimerTable); ++timerID)
+        {
+            saveInt = IntDisableAll();
+            status = TMR_GetTimerStatus(timerID, tmrLPTMRbased_c);
+
+            /* If TMR_StartTimer() has been called for this timer, start it's count */
+            /* down as of now. */
+            if (status == mTmrStatusReady_c)
+            {
+                TMR_SetTimerStatus(timerID, mTmrStatusActive_c, tmrLPTMRbased_c);
+                IntRestoreAll(saveInt);
+                continue;
+            }
+
+            IntRestoreAll(saveInt);
+
+            /* Ignore any timer that is not active. */
+            if (status != mTmrStatusActive_c)
+            {
+                continue;
+            }
+
+            /* This timer is active. Decrement it's countdown.. */
+            if (maLpTmrTimerTable[timerID].remainingTicks > lptmr_ticksSinceLastHere)
+            {
+                maLpTmrTimerTable[timerID].remainingTicks -= lptmr_ticksSinceLastHere;
+                LPTMRReadCounterRegister(maLpTmrTimerTable[timerID].timestamp);
+                continue;
+            }
+
+            timerType = TMR_GetTimerType(timerID, tmrLPTMRbased_c);
+
+            /* If this is an interval timer, restart it. Otherwise, mark it as inactive. */
+            if ((timerType & gTmrSingleShotTimer_c) ||
+                (timerType & gTmrSetMinuteTimer_c) ||
+                (timerType & gTmrSetSecondTimer_c))
+            {
+                TMR_StopLpTimer(timerID);
+            }
+            else
+            {
+                /* reload */
+                maLpTmrTimerTable[timerID].remainingTicks = maLpTmrTimerTable[timerID].intervalInTicks;
+                LPTMRReadCounterRegister(maLpTmrTimerTable[timerID].timestamp);
+            }
+
+            /* This timer has expired. */
+            pfCallBack = maLpTmrTimerTable[timerID].pfCallBack;
+
+            /*Call callback if it is not NULL
+                        This is done after the timer got updated,
+                        in case the timer gets stopped or restarted in the callback*/
+            if (pfCallBack)
+            {
+                pfCallBack(timerID);
+            }
+        }  /* for (timerID = 0; timerID < ... */
+
+        /* Find the shortest active timer. */
+        lptmr_nextInterruptTime = mLpTmrMaxToCountDown;
+
+        for (timerID = 0; timerID < NumberOfElements(maLpTmrTimerTable); ++timerID)
+        {
+            if (TMR_GetTimerStatus(timerID, tmrLPTMRbased_c) == mTmrStatusActive_c)
+            {
+                if (lptmr_nextInterruptTime > maLpTmrTimerTable[timerID].remainingTicks)
+                {
+                    lptmr_nextInterruptTime = maLpTmrTimerTable[timerID].remainingTicks;
+                }
+            }
+        }
+
+        saveInt = IntDisableAll();
+
+        /* Check to be sure that the timer was not programmed in the past for different source clocks.
+         * The interrupts are now disabled.
+         */
+        LPTMRReadCounterRegister(lptmr_ticksdiff);
+
+        /* Number of ticks to be here */
+        lptmr_ticksdiff = (uint16_t)(lptmr_ticksdiff - lptmr_currentTimeInTicks);
+
+        /* Next ticks to count already expired?? */
+        if (lptmr_ticksdiff >= lptmr_nextInterruptTime)
+        {
+            /* Is assumed that a task has to be executed in 4ms...
+                    so if the ticks already expired enter in TMR_Task() after 4ms*/
+            lptmr_nextInterruptTime = lptmr_ticksdiff + mLpTmrTicksFor4ms;
+        }
+        else
+        {
+            /* Time reference is 4ms, so be sure that won't be loaded
+                           in Cmp Reg. less that 4ms in ticks */
+            if ((lptmr_nextInterruptTime - lptmr_ticksdiff) < mLpTmrTicksFor4ms)
+            {
+                lptmr_nextInterruptTime = lptmr_ticksdiff + mLpTmrTicksFor4ms;
+            }
+        }
+
+        /* Update the compare register */
+        lptmr_nextInterruptTime += lptmr_currentTimeInTicks;
+        LPTMR0_CMR = lptmr_nextInterruptTime;
+        IntRestoreAll(saveInt);
+
+        if (!mLpTmrNumberOfActiveTimers)
+        {
+            LPTMRStopTimerHardware();
+            mLpTmrHardwareIsRunning = FALSE;
+        }
+        else if (!mLpTmrHardwareIsRunning)
+        {
+            LPTMRStartTimerHardware();
+            mLpTmrHardwareIsRunning = TRUE;
+        }
+    }
+
+#endif
 }
 
 /*---------------------------------------------------------------------------
@@ -1602,24 +1650,28 @@ void TMR_EnableTimer
 (
     tmrTimerID_t tmrID
 )
-{    		
+{
     unsigned int saveInt;
     saveInt = IntDisableAll();
-    
-#if gTMR_EnableHWLowPowerTimers_d    
+
+#if gTMR_EnableHWLowPowerTimers_d
+
     if (TMR_GetTimerStatus(tmrID, tmrFTMbased_c) == mTmrStatusInactive_c)
-    {      
-        IncrementActiveTimerNumber(TMR_GetTimerType(tmrID, tmrFTMbased_c));    
+    {
+        IncrementActiveTimerNumber(TMR_GetTimerType(tmrID, tmrFTMbased_c));
         TMR_SetTimerStatus(tmrID, mTmrStatusReady_c, tmrFTMbased_c);
         TS_SendEvent(mTimerTaskID, gTMR_Event_c);
-    }  	    
+    }
+
 #else
+
     if (TMR_GetTimerStatus(tmrID) == mTmrStatusInactive_c)
-    {      
-    	IncrementActiveTimerNumber(TMR_GetTimerType(tmrID));    
-    	TMR_SetTimerStatus(tmrID, mTmrStatusReady_c);
-    	TS_SendEvent(mTimerTaskID, gTMR_Event_c);
-    }  	   
+    {
+        IncrementActiveTimerNumber(TMR_GetTimerType(tmrID));
+        TMR_SetTimerStatus(tmrID, mTmrStatusReady_c);
+        TS_SendEvent(mTimerTaskID, gTMR_Event_c);
+    }
+
 #endif
     IntRestoreAll(saveInt);
 }
@@ -1636,16 +1688,16 @@ void TMR_EnableLpTimer
 (
     tmrTimerID_t tmrID
 )
-{    		
+{
     unsigned int saveInt;
     saveInt = IntDisableAll();
 
     if (TMR_GetTimerStatus(tmrID, tmrLPTMRbased_c) == mTmrStatusInactive_c)
-    {      
-    	IncrementActiveLpTmrTimerNumber();    
+    {
+        IncrementActiveLpTmrTimerNumber();
         TMR_SetTimerStatus(tmrID, mTmrStatusReady_c, tmrLPTMRbased_c);
         TS_SendEvent(mTimerTaskID, gLPTMR_Event_c);
-    }  	
+    }
 
     IntRestoreAll(saveInt);
 }
@@ -1657,7 +1709,7 @@ void TMR_EnableLpTimer
  * Also this function stops the hardware timer.
  * PARAMETERS:  none
  * RETURN: uint32 - time in millisecond that wasn't counted before
- *		  entering in sleep
+ *        entering in sleep
  * NOTES: none
  *---------------------------------------------------------------------------*/
 uint16_t TMR_NotCountedTicksBeforeSleep
@@ -1665,25 +1717,27 @@ uint16_t TMR_NotCountedTicksBeforeSleep
     void
 )
 {
-#if (gTMR_EnableLowPowerTimers_d)  
+#if (gTMR_EnableLowPowerTimers_d)
     uint16_t currentTimeInTicks;
-  
+
     if (!mNumberOfLowPowerActiveTimers)
+    {
         return 0;
+    }
 
     FTMReadCNTRegister(currentTimeInTicks);
     FTMStopTimerHardware();
-    mTimerHardwareIsRunning = FALSE; 
+    mTimerHardwareIsRunning = FALSE;
 
-    /* The hw timer is stopped but keep mTimerHardwareIsRunning = TRUE...*/ 
+    /* The hw timer is stopped but keep mTimerHardwareIsRunning = TRUE...*/
     /* The Lpm timers are considered as being in running mode, so that  */
-    /* not to start the hw timer if a TMR event occurs (this shouldn't happen) */ 
-     
-    return  (uint16_t)(currentTimeInTicks - mPreviousTimeInTicks);
-#else  
+    /* not to start the hw timer if a TMR event occurs (this shouldn't happen) */
+
+    return (uint16_t)(currentTimeInTicks - mPreviousTimeInTicks);
+#else
     return 0;
 #endif
-} 
+}
 
 /*---------------------------------------------------------------------------
  * NAME: TMR_SyncLpmTimers
@@ -1692,52 +1746,55 @@ uint16_t TMR_NotCountedTicksBeforeSleep
  * PARAMETERS:  sleep duration in milliseconds
  * RETURN: none
  * NOTES: none
- *---------------------------------------------------------------------------*/                             
+ *---------------------------------------------------------------------------*/
 void TMR_SyncLpmTimers
 (
     uint32_t sleepDurationTmrTicks
 )
 {
-#if (gTMR_EnableLowPowerTimers_d) 
+#if (gTMR_EnableLowPowerTimers_d)
     index_t  timerID;
     tmrTimerType_t timerType;
 
     /* Check if there are low power active timer */
     if (!mNumberOfLowPowerActiveTimers)
-        return;          
+    {
+        return;
+    }
 
-    /* For each timer, detect the timer type and count down the spent duration in sleep */  
-    for (timerID = 0; timerID < NumberOfElements(maTmrTimerTable); ++timerID) 
-    {    	
+    /* For each timer, detect the timer type and count down the spent duration in sleep */
+    for (timerID = 0; timerID < NumberOfElements(maTmrTimerTable); ++timerID)
+    {
         /* Detect the timer type and count down the spent duration in sleep */
 #if gTMR_EnableHWLowPowerTimers_d
         timerType = TMR_GetTimerType(timerID, tmrFTMbased_c);
 #else
-    	timerType = TMR_GetTimerType(timerID);
+        timerType = TMR_GetTimerType(timerID);
 #endif
         /* Sync. only the low power timers that are active */
 #if gTMR_EnableHWLowPowerTimers_d
-        if ( (TMR_GetTimerStatus(timerID, tmrFTMbased_c) == mTmrStatusActive_c)
-                && (IsLowPowerTimer(timerType)) )
+
+        if ((TMR_GetTimerStatus(timerID, tmrFTMbased_c) == mTmrStatusActive_c)
+            && (IsLowPowerTimer(timerType)))
 #else
-        if ( (TMR_GetTimerStatus(timerID) == mTmrStatusActive_c)
-        		&& (IsLowPowerTimer(timerType)) )
+        if ((TMR_GetTimerStatus(timerID) == mTmrStatusActive_c)
+            && (IsLowPowerTimer(timerType)))
 #endif
         {
             /* Timer expired when MCU was in sleep mode??? */
-            if( maTmrTimerTable[timerID].remainingTicks > sleepDurationTmrTicks) 
+            if (maTmrTimerTable[timerID].remainingTicks > sleepDurationTmrTicks)
             {
                 maTmrTimerTable[timerID].remainingTicks -= sleepDurationTmrTicks;
 
-            } 
-            else 
+            }
+            else
             {
-                maTmrTimerTable[timerID].remainingTicks = 0;           
+                maTmrTimerTable[timerID].remainingTicks = 0;
             }
 
         }
 
-    }/* end for (timerID = 0;.... */ 
+    }/* end for (timerID = 0;.... */
 
     FTMStartTimerHardware();
     FTMReadCNTRegister(mPreviousTimeInTicks);
@@ -1745,7 +1802,7 @@ void TMR_SyncLpmTimers
     TS_SendEvent(mTimerTaskID, gTMR_Event_c);
 #else
     sleepDurationTmrTicks = sleepDurationTmrTicks;
-#endif /* #if (gTMR_EnableLowPowerTimers_d) */ 
+#endif /* #if (gTMR_EnableLowPowerTimers_d) */
 }
 
 #endif /* #if gTMR_Enabled_d */
