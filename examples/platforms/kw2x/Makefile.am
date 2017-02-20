@@ -30,16 +30,16 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
 lib_LIBRARIES                                                                                = libopenthread-kw2x.a
 
-libopenthread_kw2x_a_CPPFLAGS                                                                = \
+NXP_COMMON_CPPFLAGS                                                                          = \
     -DgTargetKW24D512_USB_d=1                                                                  \
     -DgDualPanEnabled_d=0                                                                      \
     -DPHY_PARAMETERS_VALIDATION                                                                \
-    $(NULL)
-
-libopenthread_kw2x_a_CPPFLAGS                                                               += \
     -I$(top_srcdir)/include                                                                    \
     -I$(top_srcdir)/examples/platforms                                                         \
     -I$(top_srcdir)/src/core                                                                   \
+    $(NULL)
+
+NXP_SDK_CPPFLAGS                                                                             = \
     -I$(top_srcdir)/third_party/nxp/kw2x/bsp/PLM/Source                                        \
     -I$(top_srcdir)/third_party/nxp/kw2x/bsp/PLM/Interface                                     \
     -I$(top_srcdir)/third_party/nxp/kw2x/bsp/PLM/Source/NVIC                                   \
@@ -69,7 +69,7 @@ libopenthread_kw2x_a_CPPFLAGS                                                   
     #-fno-strict-aliasing                                                                      \
     $(NULL)
 
-libopenthread_kw2x_a_SOURCES                                                                 = \
+PLATFORM_SOURCES                                                                             = \
     alarm.c                                                                                    \
     atomic.c                                                                                   \
     cstartup.c                                                                                 \
@@ -84,6 +84,9 @@ libopenthread_kw2x_a_SOURCES                                                    
     uart.c                                                                                     \
     usbcdc.c                                                                                   \
     vector.c                                                                                   \
+    $(NULL)
+
+NXP_SDK_SOURCES                                                                              = \
     @top_builddir@/third_party/nxp/kw2x/bsp/PLM/Source/NVIC/Interrupt.c                        \
     @top_builddir@/third_party/nxp/kw2x/bsp/PLM/Source/GPIO/GPIO.c                             \
     @top_builddir@/third_party/nxp/kw2x/bsp/PLM/Source/RNG/RNG.c                               \
@@ -110,17 +113,23 @@ libopenthread_kw2x_a_SOURCES                                                    
     @top_builddir@/third_party/nxp/kw2x/bsp/MacPhy/Phy/Source/PhyPacketProcessor.c             \
     @top_builddir@/third_party/nxp/kw2x/bsp/MacPhy/Phy/Source/PhyPlmeData.c                    \
     @top_builddir@/third_party/nxp/kw2x/bsp/MacPhy/Phy/Source/PhyISR.c                         \
-    #@top_builddir@/third_party/nxp/kw2x/bsp/MacPhy/Phy/Source/PhyDebug.c                      \
-    #@top_builddir@/third_party/nxp/kw2x/bsp/MacPhy/Phy/Source/PhyTime.c                       \
-    #@top_builddir@/third_party/nxp/kw2x/bsp/BeeApps/BeeAppinit.c                              \
-    #@top_builddir@/third_party/nxp/kw2x/bsp/PLM/Source/Common/Sys/PlatformInit.c              \
     $(NULL)
 
 if OPENTHREAD_ENABLE_DIAG
-libopenthread_kw2x_a_SOURCES                                                                += \
+PLATFORM_SOURCES                                                                            += \
     diag.c                                                                                     \
     $(NULL)
 endif
+
+libopenthread_kw2x_a_CPPFLAGS                                                                = \
+    $(NXP_COMMON_CPPFLAGS)                                                                     \
+    $(NXP_SDK_CPPFLAGS)                                                                        \
+    $(NULL)
+
+libopenthread_kw2x_a_SOURCES                                                                 = \
+    $(PLATFORM_SOURCES)                                                                        \
+    $(NXP_SDK_SOURCES)                                                                         \
+    $(NULL)
 
 noinst_HEADERS                                                                               = \
     atomic.h                                                                                   \
