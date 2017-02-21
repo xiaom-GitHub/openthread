@@ -59,6 +59,8 @@ static bool sIsReceiverEnabled = false;
 static bool sIsPromiscuousEnabled = false;
 static bool sReceiveFrameDone = false;
 static bool sTransmitFrameDone = false;
+static bool sEnergyScanDone = false;
+static uint8_t sEnergyLevel = 0;
 static uint8_t sChannel = 0;
 
 extern void delayMs(uint16_t val);
@@ -362,8 +364,7 @@ void kw2xRadioProcess(otInstance *aInstance)
         sReceiveFrameDone = false;
         MC1324xDrv_IRQ_Enable();
     }
-
-    if (sTransmitFrameDone)
+    else if (sTransmitFrameDone)
     {
         MC1324xDrv_IRQ_Disable();
         error = otPlatRadioHandleTransmitDone(&rxPending);
@@ -372,6 +373,11 @@ void kw2xRadioProcess(otInstance *aInstance)
         PhyPlmeRxRequest(&pReceiveFrame, 0, &pRxParams);
         sTransmitFrameDone = false;
         MC1324xDrv_IRQ_Enable();
+    }
+    else if (sEnergyScanDone)
+    {
+        otPlatRadioEnergyScanDone(aInstance, sEnergyLevel);
+        sEnergyScanDone = false;
     }
 }
 
@@ -440,9 +446,9 @@ void PhyPlmeCcaConfirm(bool_t aChannelInUse)
 
 void PhyPlmeEdConfirm(uint8_t energyLevel)
 {
-    (void)energyLevel;
-
-    assert(false);
+    sEnergyScanDone = true;
+    sEnergyLevel = energyLevel;
+    PhyPlmeSetCurrentChannelRequest(sChannel);
 }
 
 void PhyPdDataConfirm(void)
@@ -531,7 +537,8 @@ int8_t otPlatRadioGetRssi(otInstance *aInstance)
 otRadioCaps otPlatRadioGetCaps(otInstance *aInstance)
 {
     (void)aInstance;
-    return kRadioCapsNone;
+
+    return kRadioCapsEnergyScan;
 }
 
 bool otPlatRadioGetPromiscuous(otInstance *aInstance)
@@ -618,8 +625,16 @@ void otPlatRadioClearSrcMatchExtEntries(otInstance *aInstance)
 
 ThreadError otPlatRadioEnergyScan(otInstance *aInstance, uint8_t aScanChannel, uint16_t aScanDuration)
 {
+    ThreadError error = kThreadError_None;
     (void)aInstance;
-    (void)aScanChannel;
     (void)aScanDuration;
-    return kThreadError_NotImplemented;
+
+    VerifyOrExit(aScanChannel >= kPhyMinChannel && aScanChannel <=kPhyMaxChannel , error = kThreadError_InvalidArgs);
+
+    VerifyOrExit(PhyPlmeSetCurrentChannelRequest(aScanChannel), error = kThreadError_Busy);
+
+    PhyPlmeEdRequest();
+
+exit:
+    return error;
 }

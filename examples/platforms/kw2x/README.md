@@ -77,6 +77,13 @@ stop
 whitelist
 ```
 
+NOTICE:
+1. After the sequence completes (SEQIRQ interrupt), software must set the XCVSEQ to IDLE (0x0), before initiating a new sequence
+
+2. All sequences can be aborted by a PLL unlock detection.
+
+
+
 NXP SDK CHANGELOG:
 1. add "#pragma GCC diagnostic ignored "-Wpedantic"" in MK21D5.h to avoid C99 does not support unnamed union or struct for c lanaguage.
 
