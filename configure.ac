@@ -1164,6 +1164,36 @@ AM_CONDITIONAL([OPENTHREAD_ENABLE_SERVICE], [test "${enable_service}" = "yes"])
 AC_DEFINE_UNQUOTED([OPENTHREAD_ENABLE_SERVICE],[${OPENTHREAD_ENABLE_SERVICE}],[Define to 1 if you want to enable Service])
 
 #
+# ANIMA
+#
+
+AC_ARG_ENABLE(anima,
+    [AS_HELP_STRING([--enable-anima],[Enable ANIMA support @<:@default=no@:>@.])],
+    [
+        case "${enableval}" in
+
+        no|yes)
+            enable_anima=${enableval}
+            ;;
+
+        *)
+            AC_MSG_ERROR([Invalid value ${enable_anima} for --enable-anima])
+            ;;
+        esac
+    ],
+    [enable_anima=no])
+
+if test "$enable_anima" = "yes"; then
+    OPENTHREAD_ENABLE_ANIMA=1
+else
+    OPENTHREAD_ENABLE_ANIMA=0
+fi
+
+AC_SUBST(OPENTHREAD_ENABLE_ANIMA)
+AM_CONDITIONAL([OPENTHREAD_ENABLE_ANIMA], [test "${enable_anima}" = "yes"])
+AC_DEFINE_UNQUOTED([OPENTHREAD_ENABLE_ANIMA],[${OPENTHREAD_ENABLE_ANIMA}],[Define to 1 if you want to enable anima])
+
+#
 # Linker Map Output
 #
 
@@ -1187,6 +1217,7 @@ AC_MSG_CHECKING([whether to enable linker map output])
 AC_MSG_RESULT(${enable_linker_map})
 AM_CONDITIONAL([OPENTHREAD_ENABLE_LINKER_MAP], [test "${enable_linker_map}" = "yes"])
 
+#
 #
 # Examples
 #
@@ -1545,6 +1576,7 @@ AC_MSG_NOTICE([
   OpenThread Raw Link-Layer support         : ${enable_raw_link_api}
   OpenThread Border Router support          : ${enable_border_router}
   OpenThread Service support                : ${enable_service}
+  OpenThread ANIMA support                  : ${enable_anima}
   OpenThread examples                       : ${OPENTHREAD_EXAMPLES}
 
 ])

@@ -274,6 +274,7 @@ set -x
         --enable-jam-detection              \
         --enable-legacy                     \
         --enable-mac-filter                 \
+        --enable-anima                      \
         --enable-service                    \
         --disable-docs                      \
         --disable-test || die
@@ -291,6 +292,7 @@ set -x
         --enable-legacy                     \
         --enable-mac-filter                 \
         --enable-service                    \
+        --enable-anima                      \
         --disable-docs                      \
         --disable-test || die
     make -j 8 || die

@@ -101,6 +101,7 @@ check_PROGRAMS                                                      = \
     test-spinel-encoder                                               \
     test-timer                                                        \
     test-toolchain                                                    \
+    test-x509                                                         \
     $(NULL)
 
 XFAIL_TESTS                                                         = \
@@ -199,6 +200,9 @@ test_timer_SOURCES           = test_platform.cpp test_timer.cpp
 
 test_toolchain_LDADD         = $(COMMON_LDADD)
 test_toolchain_SOURCES       = test_platform.cpp test_toolchain.cpp test_toolchain_c.c
+
+test_x509_LDADD              = $(COMMON_LDADD)
+test_x509_SOURCES            = test_platform.cpp test_x509.cpp
 
 if OPENTHREAD_ENABLE_DIAG
 test_diag_LDADD              = $(top_builddir)/src/diag/libopenthread-diag.a                  \

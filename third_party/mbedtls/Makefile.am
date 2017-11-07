@@ -49,6 +49,21 @@ libmbedcrypto_a_SOURCES                       = \
     repo.patched/library/sha256.c               \
     $(NULL)
 
+if OPENTHREAD_ENABLE_ANIMA
+libmbedcrypto_a_SOURCES                      += \
+    repo.patched/library/asn1parse.c            \
+    repo.patched/library/base64.c               \
+    repo.patched/library/debug.c                \
+    repo.patched/library/oid.c                  \
+    repo.patched/library/pem.c                  \
+    repo.patched/library/pk.c                   \
+    repo.patched/library/pkparse.c              \
+    repo.patched/library/pk_wrap.c              \
+    repo.patched/library/x509.c                 \
+    repo.patched/library/x509_crt.c             \
+    $(NULL)
+endif #OPENTHREAD_ENABLE_ANIMA
+
 if OPENTHREAD_EXAMPLES_EFR32
 nodist_libmbedcrypto_a_SOURCES                = \
     @top_builddir@/third_party/silabs/gecko_sdk_suite/v1.1/util/third_party/mbedtls/sl_crypto/src/sl_aes.c \

@@ -109,6 +109,7 @@ configure_OPTIONS                   = \
     --enable-raw-link-api             \
     --enable-service                  \
     --enable-tmf-proxy                \
+    --enable-anima                    \
     --with-examples=posix             \
     --with-ncp-bus=uart               \
     $(NULL)
