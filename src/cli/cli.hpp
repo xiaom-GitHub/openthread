@@ -306,6 +306,7 @@ private:
     void ProcessThread(int argc, char *argv[]);
     void ProcessTxPowerMax(int argc, char *argv[]);
     void ProcessVersion(int argc, char *argv[]);
+    void ProcessX509(int argc, char *argv[]);
 #if OPENTHREAD_ENABLE_MAC_FILTER
     void ProcessMacFilter(int argc, char *argv[]);
     void PrintMacFilter(void);

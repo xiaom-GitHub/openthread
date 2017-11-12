@@ -89,7 +89,7 @@ public:
      * @param[out]  aHash  A pointer to the output buffer.
      *
      */
-     int ParseCert(mbedtls_x509_crt *aChain, const unsigned char *aBuf, size_t aBufLen);
+     int ParseCert(mbedtls_x509_crt *aChain, const uint8_t *aBuf, size_t aBufLen);
 
      int VerifyCertSig(mbedtls_x509_crt *aCert, mbedtls_x509_crt *aTrustCa,
                       mbedtls_x509_crl *aCaCrl, const char *aCN, uint32_t *aFlags,

@@ -56,7 +56,7 @@ int X509::GetSerial(char *aBuf, size_t aSize, const mbedtls_x509_buf *aSerial)
     return mbedtls_x509_serial_gets(aBuf, aSize, aSerial);
 }
 
-int X509::ParseCert(mbedtls_x509_crt *aChain, const unsigned char *aBuf, size_t aBufLen)
+int X509::ParseCert(mbedtls_x509_crt *aChain, const uint8_t *aBuf, size_t aBufLen)
 {
     return mbedtls_x509_crt_parse(aChain, aBuf, aBufLen);
 }

@@ -1782,7 +1782,7 @@ __inline int windows_kernel_snprintf(char * s, size_t n, const char * format, ..
  *
  * Requires: MBEDTLS_ECP_C
  */
-//#define MBEDTLS_ECDH_C
+#define MBEDTLS_ECDH_C
 
 /**
  * \def MBEDTLS_ECDSA_C
@@ -1797,7 +1797,7 @@ __inline int windows_kernel_snprintf(char * s, size_t n, const char * format, ..
  *
  * Requires: MBEDTLS_ECP_C, MBEDTLS_ASN1_WRITE_C, MBEDTLS_ASN1_PARSE_C
  */
-//#define MBEDTLS_ECDSA_C
+#define MBEDTLS_ECDSA_C
 
 /**
  * \def MBEDTLS_ECJPAKE_C
@@ -2066,7 +2066,7 @@ __inline int windows_kernel_snprintf(char * s, size_t n, const char * format, ..
  *
  * This modules adds support for encoding / writing PEM files.
  */
-//#define MBEDTLS_PEM_WRITE_C
+#define MBEDTLS_PEM_WRITE_C
 
 /**
  * \def MBEDTLS_PK_C
@@ -2220,7 +2220,7 @@ __inline int windows_kernel_snprintf(char * s, size_t n, const char * format, ..
  *
  * This module is required for SSL/TLS and SHA1-signed certificates.
  */
-//#define MBEDTLS_SHA1_C
+#define MBEDTLS_SHA1_C
 
 /**
  * \def MBEDTLS_SHA256_C

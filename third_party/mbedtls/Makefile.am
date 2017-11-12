@@ -52,13 +52,17 @@ libmbedcrypto_a_SOURCES                       = \
 if OPENTHREAD_ENABLE_ANIMA
 libmbedcrypto_a_SOURCES                      += \
     repo.patched/library/asn1parse.c            \
+    repo.patched/library/asn1write.c            \
     repo.patched/library/base64.c               \
     repo.patched/library/debug.c                \
+    repo.patched/library/ecdsa.c                \
+    repo.patched/library/ecdh.c                 \
     repo.patched/library/oid.c                  \
     repo.patched/library/pem.c                  \
     repo.patched/library/pk.c                   \
     repo.patched/library/pkparse.c              \
     repo.patched/library/pk_wrap.c              \
+    repo.patched/library/sha1.c                 \
     repo.patched/library/x509.c                 \
     repo.patched/library/x509_crt.c             \
     $(NULL)

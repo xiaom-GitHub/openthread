@@ -94,6 +94,10 @@ ifeq ($(TMF_PROXY),1)
 configure_OPTIONS              += --enable-tmf-proxy
 endif
 
+ifeq ($(ANIMA),1)
+configure_OPTIONS              += --enable-anima
+endif
+
 ifeq ($(DEBUG_UART),1)
 CFLAGS   += -DOPENTHREAD_CONFIG_ENABLE_DEBUG_UART=1
 CXXFLAGS += -DOPENTHREAD_CONFIG_ENABLE_DEBUG_UART=1
