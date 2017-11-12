@@ -434,6 +434,7 @@ otError MleRouter::SetStateRouter(uint16_t aRloc16)
     mRole = OT_DEVICE_ROLE_ROUTER;
     mParentRequestState = kParentIdle;
     mParentRequestTimer.Stop();
+    mChildUpdateRequestTimer.Stop();
     ResetAdvertiseInterval();
 
     netif.SubscribeAllRoutersMulticast();
@@ -471,6 +472,7 @@ otError MleRouter::SetStateLeader(uint16_t aRloc16)
     mRole = OT_DEVICE_ROLE_LEADER;
     mParentRequestState = kParentIdle;
     mParentRequestTimer.Stop();
+    mChildUpdateRequestTimer.Stop();
     ResetAdvertiseInterval();
     AddLeaderAloc();
 
@@ -1928,6 +1930,7 @@ void MleRouter::HandleStateUpdateTimer(void)
             {
                 otLogInfoMle(GetInstance(), "Router timeout expired");
                 RemoveNeighbor(router);
+                continue;
             }
 
 #else
@@ -1941,6 +1944,7 @@ void MleRouter::HandleStateUpdateTimer(void)
             else if (age >= TimerMilli::SecToMsec(kMaxNeighborAge) + kMaxLinkRequestTimeout)
             {
                 RemoveNeighbor(router);
+                continue;
             }
 
 #endif
@@ -1951,6 +1955,7 @@ void MleRouter::HandleStateUpdateTimer(void)
             {
                 otLogInfoMle(GetInstance(), "Link Request timeout expired");
                 RemoveNeighbor(router);
+                continue;
             }
         }
 
@@ -2660,7 +2665,7 @@ otError MleRouter::SetSteeringData(const otExtAddress *aExtAddress)
     else
     {
         // Set bloom filter with the extended address passed in
-        mSteeringData.ComputeBloomFilter(aExtAddress);
+        mSteeringData.ComputeBloomFilter(*aExtAddress);
     }
 
     return error;
@@ -4094,6 +4099,9 @@ void MleRouter::HandleAddressSolicitResponse(Coap::Header *aHeader, Message *aMe
     // assign short address
     SetRouterId(routerId);
 
+    // fill in its own extended address.
+    router->SetExtAddress(*GetNetif().GetMac().GetExtAddress());
+
     SuccessOrExit(SetStateRouter(GetRloc16(mRouterId)));
 
     router->SetCost(0);
@@ -4113,17 +4121,21 @@ void MleRouter::HandleAddressSolicitResponse(Coap::Header *aHeader, Message *aMe
         }
     }
 
-    // Keep route path to the Leader reported by the parent before it is updated.
-    if (mRouters[GetLeaderId()].GetCost() == 0)
-    {
-        mRouters[GetLeaderId()].SetCost(mParentLeaderCost);
-    }
-
-    mRouters[GetLeaderId()].SetNextHop(GetRouterId(mParent.GetRloc16()));
-
-    // Keep link to the parent in order to response to Parent Requests before new link is established.
+    // Keep link to the parent in order to respond to Parent Requests before new link is established.
     mRouters[GetRouterId(mParent.GetRloc16())] = mParent;
     mRouters[GetRouterId(mParent.GetRloc16())].SetAllocated(true);
+
+    // Only has direct link connection to its parent currently.
+    mRouters[GetRouterId(mParent.GetRloc16())].SetNextHop(kInvalidRouterId);
+    mRouters[GetRouterId(mParent.GetRloc16())].SetCost(0);
+
+    // Keep route path to the Leader reported by the parent before it is updated.
+    if (GetLeaderId() != GetRouterId(mParent.GetRloc16()))
+    {
+        mRouters[GetLeaderId()].SetCost(mParentLeaderCost);
+        mRouters[GetLeaderId()].SetAllocated(true);
+        mRouters[GetLeaderId()].SetNextHop(GetRouterId(mParent.GetRloc16()));
+    }
 
     // send link request
     SendLinkRequest(NULL);
