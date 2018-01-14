@@ -42,6 +42,7 @@ EFR32MG_SDK_SRCDIR                            = $(top_srcdir)/third_party/silabs
 
 libopenthread_efr32_a_CPPFLAGS                                                = \
     -DEFR32MG12P432F1024GL125                                                   \
+    -DEMDRV_SPIDRV_INCLUDE_SLAVE                                                \
     -D__START=main                                                              \
     -D__STARTUP_CLEAR_BSS                                                       \
     -I$(top_srcdir)/include                                                     \
@@ -81,6 +82,7 @@ PLATFORM_SOURCES                                                              = 
     platform.c                                                                  \
     radio.c                                                                     \
     random.c                                                                    \
+    spi-slave.c                                                                 \
     startup-gcc.c                                                               \
     uart.c                                                                      \
     $(NULL)
@@ -102,6 +104,7 @@ nodist_libopenthread_efr32_a_SOURCES                                            
     @top_builddir@/third_party/silabs/gecko_sdk_suite/v2.0/platform/emdrv/dmadrv/src/dmadrv.c                                     \
     @top_builddir@/third_party/silabs/gecko_sdk_suite/v2.0/platform/emdrv/gpiointerrupt/src/gpiointerrupt.c                       \
     @top_builddir@/third_party/silabs/gecko_sdk_suite/v2.0/platform/emdrv/rtcdrv/src/rtcdriver.c                                  \
+    @top_builddir@/third_party/silabs/gecko_sdk_suite/v2.0/platform/emdrv/spidrv/src/spidrv.c                                     \
     @top_builddir@/third_party/silabs/gecko_sdk_suite/v2.0/platform/emdrv/uartdrv/src/uartdrv.c                                   \
     @top_builddir@/third_party/silabs/gecko_sdk_suite/v2.0/platform/emdrv/ustimer/src/ustimer.c                                   \
     @top_builddir@/third_party/silabs/gecko_sdk_suite/v2.0/platform/emlib/src/em_adc.c                                            \
