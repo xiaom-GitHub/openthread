@@ -36,6 +36,7 @@
 #include <openthread/config.h>
 
 #include <openthread/platform/logging.h>
+#include <openthread/platform/gpio.h>
 
 #include "platform-nrf5.h"
 #include <drivers/clock/nrf_drv_clock.h>
@@ -86,6 +87,8 @@ void PlatformInit(int argc, char *argv[])
     nrf5CryptoInit();
     nrf5RadioInit();
     nrf5TempInit();
+
+    otPlatGpioInit();
 }
 
 void PlatformDeinit(void)

@@ -33,6 +33,12 @@
 
 #define WPP_NAME "icmp6.tmh"
 
+#ifdef OPENTHREAD_CONFIG_FILE
+#include OPENTHREAD_CONFIG_FILE
+#else
+#include <openthread-config-generic.h>
+#endif
+
 #include "icmp6.hpp"
 
 #include "utils/wrap_string.h"
@@ -42,15 +48,23 @@
 #include "common/instance.hpp"
 #include "common/logging.hpp"
 #include "common/message.hpp"
+#include "common/owner-locator.hpp"
 #include "net/ip6.hpp"
+
+#include <openthread/platform/gpio.h>
 
 using ot::Encoding::BigEndian::HostSwap16;
 
 namespace ot {
 namespace Ip6 {
 
+static bool mIsLeader = false;
+static bool mIsRouter = false;
+static bool mIsChild  = false;
+
 Icmp::Icmp(Instance &aInstance)
     : InstanceLocator(aInstance)
+    , mLedTimer(aInstance, &Icmp::HandleLedTimer, this)
     , mHandlers(NULL)
     , mEchoSequence(1)
     , mEchoMode(OT_ICMP6_ECHO_HANDLER_ALL)
@@ -208,6 +222,49 @@ otError Icmp::HandleEchoRequest(Message &aRequestMessage, const MessageInfo &aMe
 
     otLogInfoIcmp(GetInstance(), "Received Echo Request");
 
+    if (otThreadGetDeviceRole(&GetInstance()) == OT_DEVICE_ROLE_LEADER)
+    {
+        mIsLeader = true;
+
+        // turn off the RED LED
+        otPlatGpioOutClear(LED_GPIO_PORT, RED_LED_PIN);
+
+        goto here;
+    }
+
+#ifdef OPENTHREAD_EXAMPLES_CC2650
+    {
+        mIsChild = true;
+
+        // turn off the GREEN LED
+        otPlatGpioOutClear(LED_GPIO_PORT, GREEN_LED_PIN);
+
+        goto here;
+    }
+#else
+
+    if (otThreadGetDeviceRole(&GetInstance()) == OT_DEVICE_ROLE_CHILD)
+    {
+        mIsChild = true;
+
+        // turn off the GREEN LED
+        otPlatGpioOutClear(LED_GPIO_PORT, GREEN_LED_PIN);
+
+        goto here;
+    }
+
+#endif
+
+    if (otThreadGetDeviceRole(&GetInstance()) == OT_DEVICE_ROLE_ROUTER)
+    {
+        mIsRouter = true;
+
+        // turn off the BLUE LED
+        otPlatGpioOutClear(LED_GPIO_PORT, BLUE_LED_PIN);
+    }
+
+here:
+
     icmp6Header.Init();
     icmp6Header.SetType(IcmpHeader::kTypeEchoReply);
 
@@ -238,6 +295,9 @@ otError Icmp::HandleEchoRequest(Message &aRequestMessage, const MessageInfo &aMe
     replyMessage->Read(replyMessage->GetOffset(), sizeof(icmp6Header), &icmp6Header);
     otLogInfoIcmp(GetInstance(), "Sent Echo Reply (seq = %d)", icmp6Header.GetSequence());
 
+    // start LED timer
+    mLedTimer.Start(300);
+
 exit:
 
     if (error != OT_ERROR_NONE && replyMessage != NULL)
@@ -260,6 +320,38 @@ otError Icmp::UpdateChecksum(Message &aMessage, uint16_t aChecksum)
     aChecksum = HostSwap16(aChecksum);
     aMessage.Write(aMessage.GetOffset() + IcmpHeader::GetChecksumOffset(), sizeof(aChecksum), &aChecksum);
     return OT_ERROR_NONE;
+}
+
+void Icmp::HandleLedTimer(Timer &aTimer)
+{
+    aTimer.GetOwner<Icmp>().HandleLedTimer();
+}
+
+void Icmp::HandleLedTimer(void)
+{
+    // turn on the original LED
+    if (mIsLeader)
+    {
+        otPlatGpioOutSet(LED_GPIO_PORT, RED_LED_PIN);
+        ExitNow();
+    }
+    else if (mIsChild)
+    {
+        otPlatGpioOutSet(LED_GPIO_PORT, GREEN_LED_PIN);
+        ExitNow();
+    }
+    else if (mIsRouter)
+    {
+        otPlatGpioOutSet(LED_GPIO_PORT, BLUE_LED_PIN);
+        ExitNow();
+    }
+    else
+    {
+        // do nothing
+    }
+
+exit:
+    return;
 }
 
 } // namespace Ip6

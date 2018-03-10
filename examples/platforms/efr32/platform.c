@@ -35,6 +35,7 @@
 #include <string.h>
 
 #include <openthread/platform/uart.h>
+#include <openthread/platform/gpio.h>
 
 #include "common/logging.hpp"
 
@@ -59,6 +60,8 @@ void PlatformInit(int argc, char *argv[])
     halInitChipSpecific();
 
     BSP_Init(BSP_INIT_BCC);
+    
+    otPlatGpioInit();
 
     efr32RadioInit();
     efr32AlarmInit();

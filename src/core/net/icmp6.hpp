@@ -40,6 +40,7 @@
 
 #include "common/encoding.hpp"
 #include "common/locator.hpp"
+#include "common/timer.hpp"
 #include "net/ip6_headers.hpp"
 
 using ot::Encoding::BigEndian::HostSwap16;
@@ -242,7 +243,7 @@ public:
     explicit Icmp(Instance &aInstance);
 
     /**
-     * This method returns a new ICMP message with sufficient header space reserved.
+ :   * This method returns a new ICMP message with sufficient header space reserved.
      *
      * @param[in]  aReserved  The number of header bytes to reserve after the ICMP header.
      *
@@ -344,8 +345,13 @@ public:
      */
     bool ShouldHandleEchoRequest(const MessageInfo &aMessageInfo);
 
+    TimerMilli mLedTimer;
+
 private:
     otError HandleEchoRequest(Message &aMessage, const MessageInfo &aMessageInfo);
+
+    static void HandleLedTimer(Timer &aTimer);
+    void HandleLedTimer(void);
 
     IcmpHandler *mHandlers;
 

@@ -312,7 +312,12 @@ template <> Ip6::Mpl &Instance::Get(void)
     return GetIp6().GetMpl();
 }
 
-template <> Coap::Coap &Instance::Get(void)
+template<> Ip6::Icmp &Instance::Get(void)
+{
+    return GetIp6().GetIcmp();
+}
+
+template<> Coap::Coap &Instance::Get(void)
 {
     return GetThreadNetif().GetCoap();
 }

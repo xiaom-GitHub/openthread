@@ -33,9 +33,18 @@
 
 #define WPP_NAME "mle.tmh"
 
+#ifdef OPENTHREAD_CONFIG_FILE
+#include OPENTHREAD_CONFIG_FILE
+#else
+#include <openthread-config-generic.h>
+#endif
+
 #include "mle.hpp"
 
 #include <openthread/platform/radio.h>
+#include <openthread/platform/random.h>
+#include <openthread/platform/settings.h>
+#include <openthread/platform/gpio.h>
 
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
@@ -585,6 +594,25 @@ otError Mle::SetStateDetached(void)
     netif.GetIp6().SetForwardingEnabled(false);
     netif.GetIp6().GetMpl().SetTimerExpirations(0);
 
+    // if device is detached from network, turn off LED
+    if (mPreviousPanId != Mac::kPanIdBroadcast)
+    {
+        if (mRole == OT_DEVICE_ROLE_LEADER)
+        {
+            otPlatGpioOutClear(LED_GPIO_PORT, RED_LED_PIN);
+        }
+        
+        if (mRole == OT_DEVICE_ROLE_ROUTER)
+        {
+            otPlatGpioOutClear(LED_GPIO_PORT, BLUE_LED_PIN);
+        }
+        
+        if (mRole == OT_DEVICE_ROLE_CHILD)
+        {
+            otPlatGpioOutClear(LED_GPIO_PORT, GREEN_LED_PIN);
+        }
+    }
+
     otLogInfoMle(GetInstance(), "Role -> Detached");
     return OT_ERROR_NONE;
 }
@@ -638,6 +666,12 @@ otError Mle::SetStateChild(uint16_t aRloc16)
     InformPreviousParent();
     mPreviousParentRloc = mParent.GetRloc16();
 #endif
+
+    // turn on the green LED when becoming a child
+    // and turn off other two LEDs
+    otPlatGpioOutSet(LED_GPIO_PORT, GREEN_LED_PIN);
+    otPlatGpioOutClear(LED_GPIO_PORT, BLUE_LED_PIN);
+    otPlatGpioOutClear(LED_GPIO_PORT, RED_LED_PIN);
 
     otLogInfoMle(GetInstance(), "Role -> Child");
     return OT_ERROR_NONE;

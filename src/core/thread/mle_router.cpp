@@ -36,6 +36,10 @@
 
 #include "mle_router.hpp"
 
+#include <openthread/platform/random.h>
+#include <openthread/platform/settings.h>
+#include <openthread/platform/gpio.h>
+
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
 #include "common/encoding.hpp"
@@ -456,6 +460,12 @@ otError MleRouter::SetStateRouter(uint16_t aRloc16)
         }
     }
 
+    // turn on the blue LED when becoming a Router
+    // and turn off other two LEDs
+    otPlatGpioOutSet(LED_GPIO_PORT, BLUE_LED_PIN);
+    otPlatGpioOutClear(LED_GPIO_PORT, GREEN_LED_PIN);
+    otPlatGpioOutClear(LED_GPIO_PORT, RED_LED_PIN);
+
     otLogInfoMle(GetInstance(), "Role -> Router");
     return OT_ERROR_NONE;
 }
@@ -502,6 +512,12 @@ otError MleRouter::SetStateLeader(uint16_t aRloc16)
             RemoveNeighbor(mChildren[i]);
         }
     }
+
+    // turn on the red LED when becoming a Leader
+    // and turn off other two LEDs
+    otPlatGpioOutSet(LED_GPIO_PORT, RED_LED_PIN);
+    otPlatGpioOutClear(LED_GPIO_PORT, GREEN_LED_PIN);
+    otPlatGpioOutClear(LED_GPIO_PORT, BLUE_LED_PIN);
 
     otLogInfoMle(GetInstance(), "Role -> Leader %d", mLeaderData.GetPartitionId());
     return OT_ERROR_NONE;
