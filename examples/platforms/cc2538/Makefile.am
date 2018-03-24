@@ -40,6 +40,8 @@ PLATFORM_SOURCES                          = \
     alarm.c                                 \
     diag.c                                  \
     flash.c                                 \
+    gpio.c                                  \
+    interrupt.c                             \
     misc.c                                  \
     platform.c                              \
     radio.c                                 \

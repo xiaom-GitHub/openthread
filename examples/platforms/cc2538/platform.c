@@ -31,6 +31,8 @@
  * @brief
  *   This file includes the platform-specific initializers.
  */
+#include <openthread/config.h>
+#include <openthread/platform/gpio.h>
 #include "platform-cc2538.h"
 #include <openthread/config.h>
 
@@ -44,6 +46,8 @@ void PlatformInit(int argc, char *argv[])
     cc2538AlarmInit();
     cc2538RandomInit();
     cc2538RadioInit();
+
+    otPlatGpioInit();
 
     (void)argc;
     (void)argv;
