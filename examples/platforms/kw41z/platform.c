@@ -33,6 +33,8 @@
  */
 
 #include "clock_config.h"
+#include "openthread/platform/uart.h"
+#include "openthread/platform/gpio.h"
 #include "fsl_clock.h"
 #include "fsl_device_registers.h"
 #include "fsl_port.h"
@@ -95,6 +97,7 @@ void PlatformInit(int argc, char *argv[])
     kw41zRadioInit();
 
     otPlatUartEnable();
+    otPlatGpioInit();
 
     (void)argc;
     (void)argv;
