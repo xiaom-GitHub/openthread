@@ -135,6 +135,10 @@ void Instance::AfterInit(void)
     // Restore datasets and network information
 
     GetSettings().Init();
+
+    // clear previous network config for demo
+    GetSettings().Wipe();
+
     mThreadNetif.GetMle().Restore();
 
 #if OPENTHREAD_CONFIG_ENABLE_AUTO_START_SUPPORT

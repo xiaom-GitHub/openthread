@@ -343,7 +343,7 @@ pseudo_reset:
     PlatformInit(argc, argv);
 
     //otInstanceFactoryReset(sInstance);
-    otPlatSettingsWipe(sInstance);
+    //otPlatSettingsWipe(sInstance);
 
 #if OPENTHREAD_ENABLE_MULTIPLE_INSTANCES
     // Call to query the buffer size
