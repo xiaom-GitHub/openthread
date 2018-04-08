@@ -1165,6 +1165,32 @@ exit:
     return rval;
 }
 
+Child *MleRouter::FindChild(const Ip6::Address &aAddress)
+{
+     Child *rval = NULL;
+
+     for (int i = 0; i < mMaxChildrenAllowed; i++)
+     {
+         //if (mChildren[i].GetState() != Neighbor::kStateInvalid &&
+         //    memcmp(&mChildren[i].GetExtAddress(), &aAddress, sizeof(mChildren[i].GetExtAddress())) == 0)
+         //{
+         //    ExitNow(rval = &mChildren[i]);
+         //}
+         if (mChildren[i].GetState() == Neighbor::kStateInvalid)
+         {
+             continue;
+         }
+
+         if (mChildren[i].HasIp6Address(GetInstance(), aAddress))
+         {
+             ExitNow(rval = &mChildren[i]);
+         }
+     }
+
+exit:
+     return rval;
+}
+
 uint8_t MleRouter::LinkQualityToCost(uint8_t aLinkQuality)
 {
     switch (aLinkQuality)

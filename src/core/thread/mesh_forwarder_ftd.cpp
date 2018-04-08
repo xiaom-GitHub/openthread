@@ -37,10 +37,46 @@
 
 #include "mesh_forwarder.hpp"
 
+#include "openthread/platform/random.h"
+#include "openthread/platform/gpio.h"
+
 #include "common/logging.hpp"
 #include "common/owner-locator.hpp"
 
 namespace ot {
+
+void MeshForwarder::HandleLedTimer(Timer &aTimer)
+{
+    aTimer.GetOwner<MeshForwarder>().HandleLedTimer();
+}
+
+void MeshForwarder::HandleLedTimer(void)
+{
+    // turn off other two LEDs
+    if (otThreadGetDeviceRole(&GetInstance()) == OT_DEVICE_ROLE_LEADER)
+    {
+        otPlatGpioOutClear(LED_GPIO_PORT, BLUE_LED_PIN);
+        otPlatGpioOutClear(LED_GPIO_PORT, GREEN_LED_PIN);
+        ExitNow();
+    }
+    else if (otThreadGetDeviceRole(&GetInstance()) == OT_DEVICE_ROLE_CHILD)
+    {
+        // do nothing
+    }
+    else if (otThreadGetDeviceRole(&GetInstance()) == OT_DEVICE_ROLE_ROUTER)
+    {
+        otPlatGpioOutClear(LED_GPIO_PORT, RED_LED_PIN);
+        otPlatGpioOutClear(LED_GPIO_PORT, GREEN_LED_PIN);
+        ExitNow();
+    }
+    else
+    {
+        // do nothing
+    }
+
+exit:
+    return;
+}
 
 otError MeshForwarder::SendMessage(Message &aMessage)
 {
@@ -114,8 +150,29 @@ otError MeshForwarder::SendMessage(Message &aMessage)
         {
             // schedule direct transmission
             aMessage.SetDirectTransmission();
-        }
 
+            // turn on all LED when IPv6 msg dest is its child
+            if (netif.GetMle().HasChildren() && netif.GetMle().FindChild(ip6Header.GetDestination()) &&
+                    (ip6Header.GetNextHeader() == Ip6::kProtoIcmp6))
+            {
+                if (otThreadGetDeviceRole(&GetInstance()) == OT_DEVICE_ROLE_LEADER)
+                {
+                    otPlatGpioOutSet(LED_GPIO_PORT, BLUE_LED_PIN);
+                    otPlatGpioOutSet(LED_GPIO_PORT, GREEN_LED_PIN);
+                }
+                else if (otThreadGetDeviceRole(&GetInstance()) == OT_DEVICE_ROLE_ROUTER)
+                {
+                    otPlatGpioOutSet(LED_GPIO_PORT, RED_LED_PIN);
+                    otPlatGpioOutSet(LED_GPIO_PORT, GREEN_LED_PIN);
+                }
+                else
+                {
+                    // do nothing
+                }
+                
+                mLedTimer.Start(500);
+            }
+        }
         break;
     }
 

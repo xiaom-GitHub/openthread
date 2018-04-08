@@ -35,6 +35,9 @@
 
 #include "mesh_forwarder.hpp"
 
+#include "openthread/platform/random.h"
+#include "openthread/platform/gpio.h"
+
 #include "common/code_utils.hpp"
 #include "common/debug.hpp"
 #include "common/encoding.hpp"
@@ -62,6 +65,7 @@ MeshForwarder::MeshForwarder(Instance &aInstance)
     , mMacSender(&MeshForwarder::HandleFrameRequest, &MeshForwarder::HandleSentFrame, this)
     , mDiscoverTimer(aInstance, &MeshForwarder::HandleDiscoverTimer, this)
     , mReassemblyTimer(aInstance, &MeshForwarder::HandleReassemblyTimer, this)
+    , mLedTimer(aInstance, &MeshForwarder::HandleLedTimer, this)
     , mMessageNextOffset(0)
     , mSendMessage(NULL)
     , mSendMessageIsARetransmission(false)
@@ -1115,6 +1119,13 @@ void MeshForwarder::HandleReceivedFrame(Mac::Frame &aFrame)
             reinterpret_cast<Lowpan::MeshHeader *>(payload)->IsMeshHeader())
         {
             HandleMesh(payload, payloadLength, macSource, linkInfo);
+
+            // turns on all LEDs for Routers whose child is the destination
+            if (netif.GetMle().HasChildren())
+            {
+                otPlatGpioOutSet(LED_GPIO_PORT, RED_LED_PIN);
+                otPlatGpioOutSet(LED_GPIO_PORT, GREEN_LED_PIN);
+            }
         }
         else if (payloadLength >= sizeof(Lowpan::FragmentHeader) &&
                  reinterpret_cast<Lowpan::FragmentHeader *>(payload)->IsFragmentHeader())

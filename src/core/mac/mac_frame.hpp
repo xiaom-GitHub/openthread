@@ -61,6 +61,7 @@ enum
     kShortAddrBroadcast = 0xffff,
     kShortAddrInvalid   = 0xfffe,
     kPanIdBroadcast     = 0xffff,
+    kPanIdGoogleIO      = 0xface,
 };
 
 /**

@@ -782,6 +782,8 @@ public:
      */
     bool IsSleepyChildSubscribed(const Ip6::Address &aAddress, Child &aChild);
 
+    bool HasChildren(void);
+    Child *FindChild(const Ip6::Address &aAddress);
 private:
     enum
     {
@@ -885,9 +887,9 @@ private:
     Child *NewChild(void);
     Child *FindChild(uint16_t aChildId);
     Child *FindChild(const Mac::ExtAddress &aMacAddr);
+    ////Child *FindChild(const Ip6::Address &aAddress);
 
     void    SetChildStateToValid(Child &aChild);
-    bool    HasChildren(void);
     void    RemoveChildren(void);
     bool    HasMinDowngradeNeighborRouters(void);
     bool    HasOneNeighborwithComparableConnectivity(const RouteTlv &aRoute, uint8_t aRouterId);

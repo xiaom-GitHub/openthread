@@ -47,6 +47,26 @@
 namespace ot {
 namespace Utils {
 
+#if OPENTHREAD_EXAMPLES_EFR32
+#ifdef OPENTHREAD_EXAMPES_EFR32_1
+static uint8_t mIid[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+#else
+static uint8_t mIid[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
+#endif // OPENTHREAD_EXAMPES_EFR32_1
+#endif // OPENTHREAD_EXAMPLES_EFR32
+
+#if OPENTHREAD_EXAMPLES_CC2538
+static uint8_t mIid[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03};
+#endif // OPENTHREAD_EXAMPLES_CC2538
+
+#if OPENTHREAD_EXAMPLES_NRF52840
+static uint8_t mIid[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04};
+#endif //OPENTHREAD_EXAMPLES_NRF52840
+
+#if OPENTHREAD_EXAMPLES_KW41Z
+static uint8_t mIid[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05};
+#endif //OPENTHREAD_EXAMPLES_KW41Z
+
 void Slaac::UpdateAddresses(otInstance *    aInstance,
                             otNetifAddress *aAddresses,
                             uint32_t        aNumAddresses,
@@ -152,7 +172,8 @@ void Slaac::UpdateAddresses(otInstance *    aInstance,
 
 otError Slaac::CreateRandomIid(otInstance *, otNetifAddress *aAddress, void *)
 {
-    Random::FillBuffer(aAddress->mAddress.mFields.m8 + OT_IP6_ADDRESS_SIZE - OT_IP6_IID_SIZE, OT_IP6_IID_SIZE);
+    //Random::FillBuffer(aAddress->mAddress.mFields.m8 + OT_IP6_ADDRESS_SIZE - OT_IP6_IID_SIZE, OT_IP6_IID_SIZE);
+    memcpy(&(aAddress->mAddress.mFields.m8[8]), mIid, sizeof(mIid));
     return OT_ERROR_NONE;
 }
 

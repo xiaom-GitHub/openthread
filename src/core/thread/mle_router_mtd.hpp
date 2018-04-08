@@ -140,6 +140,7 @@ public:
 
     void FillConnectivityTlv(ConnectivityTlv &) {}
     void FillRouteTlv(RouteTlv &) {}
+    bool HasChildren(void) { return false; }
 
     otError SendChildUpdateRequest(void) { return Mle::SendChildUpdateRequest(); }
 

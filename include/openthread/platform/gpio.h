@@ -44,6 +44,22 @@
 #include "openthread/types.h"
 
 /**
+ * @def OPENTHREAD_EXAMPLES_PLATFROMS
+ *
+ * OPENTHREAD_EXAMPLES_xxx_1: indicates to configure the IID for the first
+ * device of one platform; commenting this marco indicates to configure the
+ * IID for the second device.
+ *
+ * defining this macro is to hardcode the IID for which device will be used.
+ *
+ * EFR32 and DA15000 only one device
+ */
+//#define OPENTHREAD_EXAMPLES_CC2538_1
+//#define OPENTHREAD_EXAMPLES_CC2650_1
+//#define OPENTHREAD_EXAMPLES_KW41Z_1
+#define OPENTHREAD_EXAMPLES_EFR32_1
+
+/**
  * @def OPENTHREAD_GPIO_LOGIC_LEVEL
  *
  * logic 1: LEDs are turned on by outputing a high GPIO level(other side is GND);
@@ -84,7 +100,11 @@
 #define RED_LED_PIN     8
 #define GREEN_LED_PIN   9
 #define BLUE_LED_PIN    10
+
+#define INTERRUPT_PORT  gpioPortF
+#define INTERRUPT_PIN   6
 #endif // OPENTHREAD_EXAMPLES_EFR32
+
 
 #ifdef OPENTHREAD_EXAMPLES_CC2538
 
@@ -282,6 +302,12 @@ extern "C" {
  *
  */
 
+#if OPENTHREAD_EXAMPLES_EFR32
+typedef void (*otPlatGpioIntCallback)(uint8_t pin);
+#else
+typedef void (*otPlatGpioIntCallback)(void);
+#endif
+
 /**
  * Init GPIO module.
  *
@@ -311,12 +337,6 @@ void otPlatGpioOutToggle(uint32_t port, uint8_t pin);
  *
  */
 uint8_t otPlatGpioOutGet(uint32_t port, uint8_t pin);
-
-/**
- * A callback will be called when GPIO interrupt occurs.
- *
- */
-typedef void (*otPlatGpioIntCallback)(void);
 
 /**
  * Register a callback for GPIO interrupt.

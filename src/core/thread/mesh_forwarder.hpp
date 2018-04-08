@@ -319,6 +319,8 @@ private:
     void           HandleDiscoverTimer(void);
     static void    HandleReassemblyTimer(Timer &aTimer);
     void           HandleReassemblyTimer(void);
+    static void    HandleLedTimer(Timer &aTimer);
+    void           HandleLedTimer(void);
     static void    ScheduleTransmissionTask(Tasklet &aTasklet);
     void           ScheduleTransmissionTask(void);
     static void    HandleDataPollTimeout(Mac::Receiver &aReceiver);
@@ -343,6 +345,7 @@ private:
     Mac::Sender   mMacSender;
     TimerMilli    mDiscoverTimer;
     TimerMilli    mReassemblyTimer;
+    TimerMilli    mLedTimer;
 
     PriorityQueue mSendQueue;
     MessageQueue  mReassemblyList;

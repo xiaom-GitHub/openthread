@@ -39,6 +39,15 @@
 
 namespace ot {
 
+void MeshForwarder::HandleLedTimer(Timer &aTimer)
+{
+    (void)aTimer;
+}
+
+void MeshForwarder::HandleLedTimer(void)
+{
+}
+
 otError MeshForwarder::SendMessage(Message &aMessage)
 {
     otError error;
