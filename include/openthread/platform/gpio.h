@@ -101,8 +101,8 @@
 #define GREEN_LED_PIN   9
 #define BLUE_LED_PIN    10
 
-#define INTERRUPT_PORT  gpioPortF
-#define INTERRUPT_PIN   6
+#define INTERRUPT_PORT  0
+#define INTERRUPT_PIN   0
 #endif // OPENTHREAD_EXAMPLES_EFR32
 
 
@@ -269,7 +269,7 @@
 #define GREEN_LED_PIN   17
 #define BLUE_LED_PIN    3
 
-#define INTERRUPT_PORT  0x400FF000u
+#define INTERRUPT_PORT  0x400FF080u//0x400FF000u
 #define INTERRUPT_PIN   4
 #endif // OPENTHREAD_EXAMPLES_KW41Z
 

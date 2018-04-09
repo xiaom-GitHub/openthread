@@ -26,6 +26,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef OPENTHREAD_CONFIG_FILE
+#include OPENTHREAD_CONFIG_FILE
+#else
+#include <openthread-config-generic.h>
+#endif
+
 #include <stddef.h>
 #include <string.h>
 
@@ -43,7 +49,7 @@
 #include "openthread/ip6.h"
 #include "openthread/coap.h"
 //#include "openthread/platform/platform.h"
-#include "openthread/platform/settings.h"
+//#include "openthread/platform/settings.h"
 #include "openthread/platform/gpio.h"
 #include "utils/code_utils.h"
 
@@ -76,7 +82,7 @@ bool hasGlobalAddr = false;
 void HandleGpioInterrupt(uint8_t pin);
 #else
 void HandleGpioInterrupt(void);
-#endif
+#endif // OPENTHREAD_EXAMPLES_EFR32
 
 otError SendCoapHeartBeat(void);
 //void StartHeartBeatTimer(uint32_t aHeartBeatCycle);
@@ -86,6 +92,7 @@ otError SendCoapHeartBeat(void);
 void HandleGpioInterrupt(uint8_t pin)
 {
      (void)pin;
+     SendCoapHeartBeat();
      if (hasGlobalAddr)
      {
          SendCoapHeartBeat();
@@ -95,11 +102,13 @@ void HandleGpioInterrupt(uint8_t pin)
          otPlatLog(OT_LOG_LEVEL_CRIT, OT_LOG_REGION_API, "No global Addr, abort sending \r\n");
      }
 
-     otPlatGpioIntClear(INTERRUPT_PORT, INTERRUPT_PIN);
+     //otPlatGpioIntClear(INTERRUPT_PORT, INTERRUPT_PIN);
 }
-#else
+#else // OPENTHREAD_EXAMPLES_EFR32
 void HandleGpioInterrupt(void)
 {
+     SendCoapHeartBeat();
+ 
      if (hasGlobalAddr)
      {
          SendCoapHeartBeat();
@@ -310,7 +319,7 @@ void OTCALL HandleNetifStateChanged(uint32_t aFlags, void *aContext)
 exit:
      return;
 }
-#endif
+#endif // EFR32 || CC2538 || KW41Z
 
 #if OPENTHREAD_ENABLE_MULTIPLE_INSTANCES
 void *otPlatCAlloc(size_t aNum, size_t aSize)

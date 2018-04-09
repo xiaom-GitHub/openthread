@@ -116,22 +116,25 @@ uint8_t otPlatGpioOutGet(uint32_t port, uint8_t pin)
 
 void otPlatGpioIntEnable(uint32_t port, uint8_t pin)
 {
+    (void)port;
+    (void)pin;
+
     // configure PF6 as button interrupt
-    GPIO_PinModeSet(port, pin, gpioModeInputPull, 1);
-    
+    GPIO_PinModeSet(BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN, gpioModeInputPull, 1);
+
     GPIOINT_Init();
-    //GPIOINT_CallbackRegister(pin, gpioCallback);
-    GPIO_IntConfig(port, pin, false, true, true);
+    GPIO_IntConfig(BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN, false, true, true);
 }
 
 void otPlatGpioRegisterCallback(uint32_t port, otPlatGpioIntCallback aCallback)
 {
     (void)port;
-    GPIOINT_CallbackRegister(BSP_GPIO_PB0_PIN, aCallback);
+    GPIOINT_CallbackRegister(BSP_GPIO_PB1_PIN, aCallback);
 }
 
 void otPlatGpioIntClear(uint32_t port, uint8_t pin)
 {
     (void)port;
-    GPIOINT_CallbackUnRegister(pin);
+    (void)pin;
+    GPIOINT_CallbackUnRegister(BSP_GPIO_PB1_PIN);
 }
