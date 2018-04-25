@@ -35,6 +35,7 @@ EXTRA_DIST                              = \
     openthread-test-driver                \
     NordicSemiconductor                   \
     synopsys                              \
+    tinycbor                              \
     $(NULL)
 
 if OPENTHREAD_EXAMPLES_EFR32
@@ -47,11 +48,13 @@ endif
 
 DIST_SUBDIRS                            = \
     mbedtls                               \
+    tinycbor                              \
     $(NULL)
 
 if OPENTHREAD_ENABLE_BUILTIN_MBEDTLS
 SUBDIRS                                 = \
     mbedtls                               \
+    tinycbor                              \
     $(NULL)
 endif # OPENTHREAD_ENABLE_BUILTIN_MBEDTLS
 

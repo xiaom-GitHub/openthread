@@ -1,0 +1,53 @@
+#
+#    Copyright 2018 The OpenThread Authors. All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+
+include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
+
+lib_LIBRARIES                                 = libcbor.a
+
+# Do not enable -Wconversion for mbedtls
+override CFLAGS                              := $(filter-out -Wconversion,$(CFLAGS))
+override CXXFLAGS                            := $(filter-out -Wconversion,$(CXXFLAGS))
+
+# Do not enable -pedantic-errors for mbedtls
+override CFLAGS                              := $(filter-out -pedantic-errors,$(CFLAGS))
+override CXXFLAGS                            := $(filter-out -pedantic-errors,$(CXXFLAGS))
+
+TINYCBOR_SRCDIR                               = $(top_srcdir)/third_party/tinycbor/tinycbor
+
+libcbor_a_CPPFLAGS                            = \
+    -I$(top_srcdir)/include                     \
+    -I$(top_srcdir)/src/core                    \
+    -I$(TINYCBOR_SRCDIR)/src                    \
+    $(NULL)
+
+libcbor_a_SOURCES                             = \
+    tinycbor/src/cborencoder.c                  \
+    tinycbor/src/cborerrorstrings.c             \
+    tinycbor/src/cborparser.c                   \
+    tinycbor/src/cborpretty.c                   \
+    tinycbor/src/cborpretty_stdio.c             \
+    tinycbor/src/cbortojson.c                   \
+    tinycbor/src/cborvalidation.c               \
+    tinycbor/src/open_memstream.c               \
+    $(NULL)
+
+if OPENTHREAD_BUILD_COVERAGE
+Dash                                          = -
+CLEANFILES                                    = $(shell find $(top_builddir)/third_party/tinycbor $(Dash)name "*.gcda" $(Dash)o $(Dash)name "*.gcno")
+endif # OPENTHREAD_BUILD_COVERAGE
+
+include $(abs_top_nlbuild_autotools_dir)/automake/post.am

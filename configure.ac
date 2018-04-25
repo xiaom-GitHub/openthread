@@ -1543,6 +1543,7 @@ src/core/Makefile
 src/diag/Makefile
 third_party/Makefile
 third_party/mbedtls/Makefile
+third_party/tinycbor/Makefile
 examples/Makefile
 examples/apps/Makefile
 examples/apps/cli/Makefile
